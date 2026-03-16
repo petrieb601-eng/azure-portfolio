@@ -41,3 +41,47 @@ def about():
 
 if __name__ == '__main__':
     app.run(debug=True)
+from flask import Flask, render_template, request, jsonify
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.core.credentials import AzureKeyCredential
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = Flask(__name__)
+
+# Azure AI setup
+def authenticate_client():
+    key = os.getenv('AZURE_LANGUAGE_KEY')
+    endpoint = os.getenv('AZURE_LANGUAGE_ENDPOINT')
+    if key and endpoint:
+        return TextAnalyticsClient(endpoint=endpoint, credential=AzureKeyCredential(key))
+    return None
+
+# Your existing routes...
+# (keep all your current routes)
+
+@app.route('/sentiment')
+def sentiment():
+    return render_template('sentiment.html')
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    client = authenticate_client()
+    if not client:
+        return jsonify({'error': 'AI service not configured'}), 500
+    
+    text = request.json.get('text', '')
+    
+    try:
+        response = client.analyze_sentiment(documents=[text])[0]
+        
+        return jsonify({
+            'sentiment': response.sentiment,
+            'positive': response.confidence_scores.positive,
+            'neutral': response.confidence_scores.neutral,
+            'negative': response.confidence_scores.negative
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

@@ -1,0 +1,32 @@
+Flask==3.0.0
+pyodbc==5.0.1
+python-dotenv==1.0.0
+gunicorn==21.2.0
+```
+
+3. **Press `Ctrl + S` to save**
+
+---
+
+### **File 2: .gitignore**
+
+1. **Double-click `.gitignore`** to open it
+2. **Copy and paste this:**
+```
+.env
+__pycache__/
+*.pyc
+venv/
+.vscode/
+```
+
+3. **Press `Ctrl + S` to save**
+
+---
+
+### **File 3: .env**
+
+1. **Double-click `.env`** to open it
+2. **Copy and paste this placeholder:**
+```
+AZURE_SQL_CONNECTION_STRING=placeholder_we_will_fill_this_later

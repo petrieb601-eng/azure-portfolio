@@ -104,21 +104,24 @@ def analyze_image():
         if not image_url:
             return jsonify({'error': 'No image URL provided'}), 400
         
-        # Analyze image - changed from analyze_from_url to analyze
+        # Analyze image - using only universally supported features
         result = client.analyze(
             image_url=image_url,
             visual_features=[
-                VisualFeatures.CAPTION,
-                VisualFeatures.OBJECTS,
                 VisualFeatures.TAGS,
+                VisualFeatures.OBJECTS,
                 VisualFeatures.READ
             ]
         )
         
+        # Create a description from tags
+        top_tags = [tag.name for tag in (result.tags.list[:3] if result.tags else [])]
+        generated_caption = f"An image featuring {', '.join(top_tags)}" if top_tags else "Image analyzed"
+        
         # Extract results with safer handling
         response_data = {
-            'caption': result.caption.text if result.caption else 'No caption available',
-            'confidence': result.caption.confidence if result.caption else 0,
+            'caption': generated_caption,
+            'confidence': result.tags.list[0].confidence if result.tags and result.tags.list else 0,
             'objects': [{'name': obj.tags[0].name if obj.tags else 'Unknown', 
                         'confidence': obj.tags[0].confidence if obj.tags else 0} 
                        for obj in (result.objects.list if result.objects else [])],

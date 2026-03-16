@@ -104,8 +104,8 @@ def analyze_image():
         if not image_url:
             return jsonify({'error': 'No image URL provided'}), 400
         
-        # Analyze image
-        result = client.analyze_from_url(
+        # Analyze image - changed from analyze_from_url to analyze
+        result = client.analyze(
             image_url=image_url,
             visual_features=[
                 VisualFeatures.CAPTION,
@@ -115,15 +115,17 @@ def analyze_image():
             ]
         )
         
-        # Extract results
+        # Extract results with safer handling
         response_data = {
             'caption': result.caption.text if result.caption else 'No caption available',
             'confidence': result.caption.confidence if result.caption else 0,
-            'objects': [{'name': obj.tags[0].name, 'confidence': obj.tags[0].confidence} 
-                       for obj in result.objects.list] if result.objects else [],
+            'objects': [{'name': obj.tags[0].name if obj.tags else 'Unknown', 
+                        'confidence': obj.tags[0].confidence if obj.tags else 0} 
+                       for obj in (result.objects.list if result.objects else [])],
             'tags': [{'name': tag.name, 'confidence': tag.confidence} 
-                    for tag in result.tags.list[:10]] if result.tags else [],
-            'text': [line.text for block in result.read.blocks for line in block.lines] if result.read else []
+                    for tag in (result.tags.list[:10] if result.tags else [])],
+            'text': [line.text for block in (result.read.blocks if result.read else []) 
+                    for line in block.lines]
         }
         
         return jsonify(response_data)

@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}AI Image Analysis - Bryan Petrie{% endblock %}
+
+{% block content %}
+<div class="sentiment-container">
+    <h1>AI-Powered Image Analysis</h1>
+    <p>Enter an image URL below to analyze it using Azure Computer Vision AI</p>
+    
+    <div class="sentiment-input">
+        <input type="text" id="imageUrl" placeholder="Enter image URL (e.g., https://example.com/image.jpg)">
+        <button onclick="analyzeImage()" class="btn">Analyze Image</button>
+        
+        <div class="sample-images">
+            <p><strong>Try these sample images:</strong></p>
+            <button onclick="useSample('https://images.unsplash.com/photo-1551963831-b3b1ca40c98e')" class="btn btn-small">Breakfast</button>
+            <button onclick="useSample('https://images.unsplash.com/photo-1534438327276-14e5300c3a48')" class="btn btn-small">Gym</button>
+            <button onclick="useSample('https://images.unsplash.com/photo-1579952363873-27f3bade9f55')" class="btn btn-small">Desert</button>
+        </div>
+    </div>
+    
+    <div id="imagePreview" class="hidden">
+        <h3>Image Preview:</h3>
+        <img id="previewImg" src="" alt="Preview">
+    </div>
+    
+    <div id="results" class="results hidden">
+        <h2>Analysis Results:</h2>
+        
+        <div class="result-section">
+            <h3>📝 Image Description</h3>
+            <p id="caption" class="caption-text"></p>
+            <p class="confidence">Confidence: <span id="captionConfidence"></span></p>
+        </div>
+        
+        <div class="result-section">
+            <h3>🏷️ Detected Tags</h3>
+            <div id="tags" class="tags-container"></div>
+        </div>
+        
+        <div class="result-section">
+            <h3>🎯 Detected Objects</h3>
+            <div id="objects" class="objects-container"></div>
+        </div>
+        
+        <div class="result-section" id="textSection" style="display: none;">
+            <h3>📄 Text Found in Image</h3>
+            <div id="text" class="text-container"></div>
+        </div>
+    </div>
+    
+    <div id="error" class="error hidden"></div>
+</div>
+
+<style>
+.sentiment-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.sentiment-input {
+    margin: 2rem 0;
+}
+
+#imageUrl {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.sample-images {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.sample-images button {
+    margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+#imagePreview {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+#previewImg {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.results {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+}
+
+.result-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.result-section h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.caption-text {
+    font-size: 1.2rem;
+    color: #34495e;
+    font-weight: 500;
+}
+
+.confidence {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.tags-container, .objects-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag, .object {
+    background: #3498db;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.object {
+    background: #e74c3c;
+}
+
+.text-container {
+    background: white;
+    padding: 1rem;
+    border-left: 4px solid #3498db;
+}
+
+.text-line {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.hidden {
+    display: none;
+}
+
+.error {
+    background: #e74c3c;
+    color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+}
+</style>
+
+<script>
+function useSample(url) {
+    document.getElementById('imageUrl').value = url;
+    analyzeImage();
+}
+
+async function analyzeImage() {
+    const imageUrl = document.getElementById('imageUrl').value;
+    
+    if (!imageUrl.trim()) {
+        alert('Please enter an image URL');
+        return;
+    }
+    
+    // Show preview
+    document.getElementById('previewImg').src = imageUrl;
+    document.getElementById('imagePreview').classList.remove('hidden');
+    
+    document.getElementById('results').classList.add('hidden');
+    document.getElementById('error').classList.add('hidden');
+    
+    try {
+        const response = await fetch('/analyze-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image_url: imageUrl })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            document.getElementById('error').textContent = data.error;
+            document.getElementById('error').classList.remove('hidden');
+            return;
+        }
+        
+        // Display caption
+        document.getElementById('caption').textContent = data.caption;
+        document.getElementById('captionConfidence').textContent = 
+            (data.confidence * 100).toFixed(1) + '%';
+        
+        // Display tags
+        const tagsContainer = document.getElementById('tags');
+        tagsContainer.innerHTML = '';
+        data.tags.forEach(tag => {
+            const tagEl = document.createElement('span');
+            tagEl.className = 'tag';
+            tagEl.textContent = `${tag.name} (${(tag.confidence * 100).toFixed(0)}%)`;
+            tagsContainer.appendChild(tagEl);
+        });
+        
+        // Display objects
+        const objectsContainer = document.getElementById('objects');
+        objectsContainer.innerHTML = '';
+        if (data.objects.length > 0) {
+            data.objects.forEach(obj => {
+                const objEl = document.createElement('span');
+                objEl.className = 'object';
+                objEl.textContent = `${obj.name} (${(obj.confidence * 100).toFixed(0)}%)`;
+                objectsContainer.appendChild(objEl);
+            });
+        } else {
+            objectsContainer.innerHTML = '<p>No specific objects detected</p>';
+        }
+        
+        // Display text
+        const textSection = document.getElementById('textSection');
+        const textContainer = document.getElementById('text');
+        if (data.text.length > 0) {
+            textSection.style.display = 'block';
+            textContainer.innerHTML = '';
+            data.text.forEach(line => {
+                const lineEl = document.createElement('div');
+                lineEl.className = 'text-line';
+                lineEl.textContent = line;
+                textContainer.appendChild(lineEl);
+            });
+        } else {
+            textSection.style.display = 'none';
+        }
+        
+        document.getElementById('results').classList.remove('hidden');
+        
+    } catch (error) {
+        document.getElementById('error').textContent = 'Failed to analyze image: ' + error;
+        document.getElementById('error').classList.remove('hidden');
+    }
+}
+</script>
+{% endblock %}

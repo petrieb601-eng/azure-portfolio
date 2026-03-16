@@ -259,12 +259,30 @@ footer {
     }
 }
 
+/* AI Section on Projects Page */
+.ai-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e0e0e0;
+}
+
+.ai-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+}
+
+.ai-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
 
 .ai-card {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    max-width: 600px;
-    margin: 0 auto;
 }
 
 .ai-card h3 {

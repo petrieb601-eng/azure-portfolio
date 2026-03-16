@@ -3,6 +3,9 @@ from azure.ai.textanalytics import TextAnalyticsClient
 from azure.core.credentials import AzureKeyCredential
 import os
 from dotenv import load_dotenv
+from azure.ai.vision.imageanalysis import ImageAnalysisClient
+from azure.ai.vision.imageanalysis.models import VisualFeatures
+from azure.core.credentials import AzureKeyCredential as VisionKeyCredential
 
 load_dotenv()
 
@@ -41,6 +44,13 @@ def authenticate_client():
         return TextAnalyticsClient(endpoint=endpoint, credential=AzureKeyCredential(key))
     return None
 
+def authenticate_vision_client():
+    key = os.getenv('AZURE_VISION_KEY')
+    endpoint = os.getenv('AZURE_VISION_ENDPOINT')
+    if key and endpoint:
+        return ImageAnalysisClient(endpoint=endpoint, credential=VisionKeyCredential(key))
+    return None
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -74,6 +84,50 @@ def analyze():
             'neutral': response.confidence_scores.neutral,
             'negative': response.confidence_scores.negative
         })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/image-analysis')
+def image_analysis():
+    return render_template('image_analysis.html')
+
+@app.route('/analyze-image', methods=['POST'])
+def analyze_image():
+    client = authenticate_vision_client()
+    if not client:
+        return jsonify({'error': 'Vision service not configured'}), 500
+    
+    try:
+        # Get image URL from request
+        image_url = request.json.get('image_url', '')
+        
+        if not image_url:
+            return jsonify({'error': 'No image URL provided'}), 400
+        
+        # Analyze image
+        result = client.analyze_from_url(
+            image_url=image_url,
+            visual_features=[
+                VisualFeatures.CAPTION,
+                VisualFeatures.OBJECTS,
+                VisualFeatures.TAGS,
+                VisualFeatures.READ
+            ]
+        )
+        
+        # Extract results
+        response_data = {
+            'caption': result.caption.text if result.caption else 'No caption available',
+            'confidence': result.caption.confidence if result.caption else 0,
+            'objects': [{'name': obj.tags[0].name, 'confidence': obj.tags[0].confidence} 
+                       for obj in result.objects.list] if result.objects else [],
+            'tags': [{'name': tag.name, 'confidence': tag.confidence} 
+                    for tag in result.tags.list[:10]] if result.tags else [],
+            'text': [line.text for block in result.read.blocks for line in block.lines] if result.read else []
+        }
+        
+        return jsonify(response_data)
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

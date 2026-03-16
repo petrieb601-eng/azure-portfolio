@@ -258,3 +258,29 @@ footer {
         align-items: center;
     }
 }
+
+
+.ai-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.ai-card h3 {
+    color: white;
+}
+
+.ai-card .technologies {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.ai-card .btn {
+    background-color: white;
+    color: #667eea;
+}
+
+.ai-card .btn:hover {
+    background-color: #f0f0f0;
+}

@@ -19,11 +19,25 @@
             <div class="technologies">
                 <strong>Technologies:</strong> {{ project.technologies }}
             </div>
-            {% if project.github_url %}
-            <a href="{{ project.github_url }}" class="btn btn-small" target="_blank">View on GitHub</a>
-            {% endif %}
+            
         </div>
         {% endfor %}
+    </div>
+    
+    <!-- AI Sentiment Analysis Card -->
+    <div class="ai-section">
+        <h2>Try AI-Powered Tools</h2>
+        <div class="project-card ai-card">
+            <h3>🤖 Sentiment Analysis</h3>
+            <p>Use Azure AI to analyze the sentiment of any text in real-time. See how artificial intelligence can determine if text is positive, negative, or neutral.</p>
+            <div class="technologies">
+                <strong>Technologies:</strong> Azure Cognitive Services, AI, Python, Flask
+            </div>
+            <a href="/sentiment" class="btn btn-small">Try AI Demo</a>
+        </div>
+    </div>
+    
+    {% else %}
     </div>
     {% else %}
     <p>No projects found. Add some projects to your database!</p>

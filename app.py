@@ -1,4 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.core.credentials import AzureKeyCredential
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -27,6 +33,14 @@ fake_projects = [
     }
 ]
 
+# Azure AI setup
+def authenticate_client():
+    key = os.getenv('AZURE_LANGUAGE_KEY')
+    endpoint = os.getenv('AZURE_LANGUAGE_ENDPOINT')
+    if key and endpoint:
+        return TextAnalyticsClient(endpoint=endpoint, credential=AzureKeyCredential(key))
+    return None
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -38,29 +52,6 @@ def projects():
 @app.route('/about')
 def about():
     return render_template('about.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
-from flask import Flask, render_template, request, jsonify
-from azure.ai.textanalytics import TextAnalyticsClient
-from azure.core.credentials import AzureKeyCredential
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-app = Flask(__name__)
-
-# Azure AI setup
-def authenticate_client():
-    key = os.getenv('AZURE_LANGUAGE_KEY')
-    endpoint = os.getenv('AZURE_LANGUAGE_ENDPOINT')
-    if key and endpoint:
-        return TextAnalyticsClient(endpoint=endpoint, credential=AzureKeyCredential(key))
-    return None
-
-# Your existing routes...
-# (keep all your current routes)
 
 @app.route('/sentiment')
 def sentiment():
@@ -85,3 +76,6 @@ def analyze():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)

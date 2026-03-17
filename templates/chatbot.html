@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}AI Chatbot - Ask About Bryan{% endblock %}
+
+{% block content %}
+<div class="chatbot-container">
+    <h1>🤖 Ask Me Anything About Bryan</h1>
+    <p>This AI chatbot uses RAG (Retrieval-Augmented Generation) to answer questions about Bryan's experience, skills, and projects.</p>
+    
+    <div class="chat-box">
+        <div id="chatMessages" class="chat-messages">
+            <div class="message bot-message">
+                <strong>AI Assistant:</strong> Hi! I'm an AI assistant with knowledge about Bryan Petrie. Ask me anything about his education, skills, projects, or experience!
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" id="userInput" placeholder="Ask a question... (e.g., 'What's Bryan's GPA?' or 'What projects has he worked on?')" />
+            <button onclick="sendMessage()" class="btn">Send</button>
+        </div>
+        
+        <div class="sample-questions">
+            <p><strong>Try asking:</strong></p>
+            <button onclick="askSample('What programming languages does Bryan know?')" class="btn btn-small">Programming Languages</button>
+            <button onclick="askSample('Tell me about Bryan\\'s education')" class="btn btn-small">Education</button>
+            <button onclick="askSample('What AI projects has Bryan built?')" class="btn btn-small">AI Projects</button>
+            <button onclick="askSample('What is Bryan\\'s GPA?')" class="btn btn-small">GPA</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.chatbot-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.chatbot-container h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.chatbot-container > p {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+.chat-box {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.chat-messages {
+    height: 500px;
+    overflow-y: auto;
+    padding: 2rem;
+    background: #f8f9fa;
+}
+
+.message {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+.user-message {
+    background: #3498db;
+    color: white;
+    margin-left: 20%;
+    text-align: right;
+}
+
+.bot-message {
+    background: white;
+    border: 1px solid #e0e0e0;
+    margin-right: 20%;
+}
+
+.bot-message strong {
+    color: #667eea;
+}
+
+.typing-indicator {
+    background: white;
+    border: 1px solid #e0e0e0;
+    margin-right: 20%;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.typing-indicator span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #667eea;
+    margin: 0 2px;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-10px); }
+}
+
+.chat-input-container {
+    display: flex;
+    padding: 1.5rem;
+    background: white;
+    border-top: 1px solid #e0e0e0;
+    gap: 1rem;
+}
+
+#userInput {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+#userInput:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.sample-questions {
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.sample-questions button {
+    margin: 0.25rem;
+}
+
+.error-message {
+    background: #e74c3c;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 20%;
+}
+</style>
+
+<script>
+function askSample(question) {
+    document.getElementById('userInput').value = question;
+    sendMessage();
+}
+
+async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message to chat
+    addMessage(message, 'user');
+    input.value = '';
+    
+    // Show typing indicator
+    const typingId = showTyping();
+    
+    try {
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: message })
+        });
+        
+        const data = await response.json();
+        
+        // Remove typing indicator
+        removeTyping(typingId);
+        
+        if (data.error) {
+            addMessage('Sorry, there was an error: ' + data.error, 'error');
+            return;
+        }
+        
+        // Add bot response
+        addMessage(data.response, 'bot');
+        
+    } catch (error) {
+        removeTyping(typingId);
+        addMessage('Sorry, there was an error connecting to the chatbot.', 'error');
+    }
+}
+
+function addMessage(text, type) {
+    const messagesDiv = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    
+    if (type === 'user') {
+        messageDiv.className = 'message user-message';
+        messageDiv.innerHTML = '<strong>You:</strong> ' + text;
+    } else if (type === 'bot') {
+        messageDiv.className = 'message bot-message';
+        messageDiv.innerHTML = '<strong>AI Assistant:</strong> ' + text;
+    } else if (type === 'error') {
+        messageDiv.className = 'error-message';
+        messageDiv.textContent = text;
+    }
+    
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function showTyping() {
+    const messagesDiv = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typing-' + Date.now();
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    messagesDiv.appendChild(typingDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    return typingDiv.id;
+}
+
+function removeTyping(id) {
+    const typingDiv = document.getElementById(id);
+    if (typingDiv) typingDiv.remove();
+}
+
+// Allow Enter key to send message
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+});
+</script>
+{% endblock %}

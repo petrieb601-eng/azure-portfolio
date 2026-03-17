@@ -1,0 +1,85 @@
+ABOUT BRYAN PETRIE
+
+EDUCATION:
+- Currently studying at William Penn University (2024-2027)
+- Bachelor of Science in Software Engineering and Information Technology
+- Minor in Business Management
+- GPA: 3.9
+- Expected graduation: 2027
+
+TECHNICAL SKILLS:
+- Programming Languages: Python, Java, SQL, HTML, CSS, JavaScript, PowerShell
+- Cloud & Systems: Microsoft Azure, Azure App Service, Azure SQL Database, Azure Cognitive Services, Virtual Machine Management, Network Administration
+- AI & Machine Learning: Azure OpenAI, Azure Cognitive Services, Natural Language Processing, Computer Vision, Sentiment Analysis
+- Development: Flask, Database Design, Object-Oriented Programming, Git, GitHub, CI/CD with GitHub Actions
+- Tools: VS Code, Git, Azure Portal, Azure DevOps
+
+WORK EXPERIENCE:
+
+William Penn University Lab Assistant (2025-2026):
+- Managed and assisted students with software and programming issues
+- Guided students through troubleshooting processes
+- Helped students understand how to navigate technical problems independently
+
+Line Cook at Buff's Gameday (Sept 2022 - Jan 2026):
+- Gained experience in a work establishment
+- Developed skills in communication and work area management
+- Assisted in training new employees
+- Established kitchen standards while maintaining health standards
+
+PROJECTS:
+
+Azure Portfolio Website:
+- Deployed full-stack web application on Azure App Service with automated CI/CD from GitHub
+- Integrated Azure SQL Database for dynamic content management
+- Implemented responsive front-end using HTML5, CSS3, and modern web design
+- Configured GitHub Actions for continuous deployment
+- Technologies: Python, Flask, Azure, SQL, HTML/CSS
+
+AI Sentiment Analysis Tool:
+- Built sentiment analysis application using Azure Cognitive Services
+- Analyzes text to determine positive, negative, or neutral sentiment
+- Real-time processing with confidence scores
+- Technologies: Azure Language Services, Python, Flask, JavaScript
+
+AI Image Analysis Tool:
+- Created image analysis tool using Azure Computer Vision
+- Detects objects, extracts text (OCR), and identifies image tags
+- Supports any image URL with real-time analysis
+- Technologies: Azure Computer Vision, Python, Flask
+
+Advanced Game Design:
+- Developed, debugged, and implemented game mechanics
+- Created player movement, collision detection, and scoring systems
+- Maintained original functionality while adding new features
+- Technologies: Java, Object-Oriented Programming
+
+POS Development:
+- Assisted in implementation and development of Point of Service system
+- Consulted staff to ensure user-friendly and flexible system
+- Technologies: Python, SQL, Database Design, UI/UX
+
+ATHLETICS:
+- Dual-sport athlete: Soccer and Track & Field
+- Team Captain for both soccer and track teams
+- Balances competitive athletics with academic excellence (3.9 GPA)
+- Demonstrates time management, teamwork, and leadership skills
+
+CONTACT INFORMATION:
+- Email: Petrieb601@gmail.com
+- Phone: 319-930-6072
+- Location: Iowa
+- School: William Penn University
+
+PERSONAL INTERESTS:
+- Dogs (has 4 dogs at home)
+- Fitness and lifting
+- Cooking
+- Technology and software development
+- Sports (soccer and track)
+
+CAREER GOALS:
+- Pursuing bachelor's degree in Software Engineering and Information Technology
+- Plans to pursue master's degree after completing bachelor's
+- Interested in cloud computing, AI/ML, and full-stack development
+- Passionate about building practical, useful applications

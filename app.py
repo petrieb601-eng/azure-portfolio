@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from azure.core.credentials import AzureKeyCredential as VisionKeyCredential
+from openai import AzureOpenAI
 
 load_dotenv()
 
@@ -50,6 +51,24 @@ def authenticate_vision_client():
     if key and endpoint:
         return ImageAnalysisClient(endpoint=endpoint, credential=VisionKeyCredential(key))
     return None
+
+def get_openai_client():
+    api_key = os.getenv('AZURE_OPENAI_KEY')
+    endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+    if api_key and endpoint:
+        return AzureOpenAI(
+            api_key=api_key,
+            api_version="2024-02-15-preview",
+            azure_endpoint=endpoint
+        )
+    return None
+
+def load_knowledge_base():
+    try:
+        with open('knowledge_base.txt', 'r') as f:
+            return f.read()
+    except:
+        return "No knowledge base available."
 
 @app.route('/')
 def home():
@@ -132,6 +151,58 @@ def analyze_image():
         }
         
         return jsonify(response_data)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/chatbot')
+def chatbot():
+    return render_template('chatbot.html')
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    client = get_openai_client()
+    if not client:
+        return jsonify({'error': 'OpenAI service not configured'}), 500
+    
+    try:
+        user_message = request.json.get('message', '')
+        
+        if not user_message:
+            return jsonify({'error': 'No message provided'}), 400
+        
+        # Load knowledge base
+        knowledge = load_knowledge_base()
+        
+        # Create system message with RAG context
+        system_message = f"""You are a helpful assistant that answers questions about Bryan Petrie based on the following information.
+        
+KNOWLEDGE BASE:
+{knowledge}
+
+Instructions:
+- Only answer questions based on the information provided above
+- If the information isn't in the knowledge base, say "I don't have that information about Bryan"
+- Be friendly and conversational
+- Keep answers concise but informative
+- You can elaborate on the information provided, but don't make things up"""
+
+        # Call Azure OpenAI
+        deployment_name = os.getenv('AZURE_OPENAI_DEPLOYMENT', 'chat-model')
+        
+        response = client.chat.completions.create(
+            model=deployment_name,
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_message}
+            ],
+            temperature=0.7,
+            max_tokens=500
+        )
+        
+        assistant_message = response.choices[0].message.content
+        
+        return jsonify({'response': assistant_message})
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500

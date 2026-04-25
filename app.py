@@ -12,6 +12,9 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from werkzeug.utils import secure_filename
 import base64
+import zxcvbn
+import secrets
+import string
 
 load_dotenv()
 
@@ -322,6 +325,96 @@ def decrypt_file():
         
     except Exception as e:
         return jsonify({'error': 'Decryption failed. Wrong password or corrupted file.'}), 500
+
+@app.route('/password-checker')
+def password_checker():
+    return render_template('password_checker.html')
+
+@app.route('/check-password', methods=['POST'])
+def check_password():
+    try:
+        password = request.json.get('password', '')
+        
+        if not password:
+            return jsonify({'error': 'No password provided'}), 400
+        
+        # Use zxcvbn to analyze password strength
+        result = zxcvbn.zxcvbn(password)
+        
+        # Calculate additional metrics
+        length = len(password)
+        has_upper = any(c.isupper() for c in password)
+        has_lower = any(c.islower() for c in password)
+        has_digit = any(c.isdigit() for c in password)
+        has_special = any(c in string.punctuation for c in password)
+        
+        # Determine strength level
+        score = result['score']  # 0-4 scale
+        strength_labels = ['Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong']
+        strength = strength_labels[score]
+        
+        # Get crack time estimates
+        crack_time = result['crack_times_display']['offline_slow_hashing_1e4_per_second']
+        
+        # Suggestions for improvement
+        suggestions = result['feedback']['suggestions']
+        warning = result['feedback']['warning']
+        
+        return jsonify({
+            'strength': strength,
+            'score': score,
+            'length': length,
+            'has_upper': has_upper,
+            'has_lower': has_lower,
+            'has_digit': has_digit,
+            'has_special': has_special,
+            'crack_time': crack_time,
+            'suggestions': suggestions,
+            'warning': warning
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/generate-password', methods=['POST'])
+def generate_password():
+    try:
+        data = request.json
+        length = int(data.get('length', 16))
+        use_upper = data.get('use_upper', True)
+        use_lower = data.get('use_lower', True)
+        use_digits = data.get('use_digits', True)
+        use_special = data.get('use_special', True)
+        
+        # Validate length
+        if length < 8:
+            length = 8
+        if length > 128:
+            length = 128
+        
+        # Build character set
+        chars = ''
+        if use_lower:
+            chars += string.ascii_lowercase
+        if use_upper:
+            chars += string.ascii_uppercase
+        if use_digits:
+            chars += string.digits
+        if use_special:
+            chars += string.punctuation
+        
+        if not chars:
+            return jsonify({'error': 'Must select at least one character type'}), 400
+        
+        # Generate cryptographically secure password
+        password = ''.join(secrets.choice(chars) for _ in range(length))
+        
+        return jsonify({
+            'password': password
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

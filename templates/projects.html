@@ -1,4 +1,26 @@
-{% endfor %}
+{% extends "base.html" %}
+
+{% block title %}Projects - Bryan Petrie{% endblock %}
+
+{% block content %}
+<div class="projects-container">
+    <h1>My Projects</h1>
+    
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if projects %}
+    <div class="projects-grid">
+        {% for project in projects %}
+        <div class="project-card">
+            <h3>{{ project.name }}</h3>
+            <p>{{ project.description }}</p>
+            <div class="technologies">
+                <strong>Technologies:</strong> {{ project.technologies }}
+            </div>
+        </div>
+        {% endfor %}
     </div>
     
     <!-- AI Powered Tools Section -->
@@ -50,3 +72,7 @@
     </div>
     
     {% else %}
+    <p>No projects found. Add some projects to your database!</p>
+    {% endif %}
+</div>
+{% endblock %}

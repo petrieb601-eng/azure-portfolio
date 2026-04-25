@@ -9,7 +9,7 @@ from azure.core.credentials import AzureKeyCredential as VisionKeyCredential
 from openai import AzureOpenAI
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from werkzeug.utils import secure_filename
 import base64
 
@@ -85,7 +85,7 @@ def allowed_file(filename):
 
 def generate_key_from_password(password, salt):
     """Generate encryption key from password"""
-    kdf = PBKDF2(
+    kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,

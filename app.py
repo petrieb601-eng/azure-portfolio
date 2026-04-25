@@ -17,6 +17,10 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# File encryption configuration
+UPLOAD_FOLDER = '/tmp/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'zip'}
+
 # Fake data for now (we'll connect to database later)
 fake_projects = [
     {
@@ -63,8 +67,9 @@ def get_openai_client():
     if api_key and endpoint:
         return AzureOpenAI(
             api_key=api_key,
-            api_version="2024-02-15-preview",
-            azure_endpoint=endpoint
+            api_version="2024-08-01-preview",
+            azure_endpoint=endpoint,
+            http_client=None
         )
     return None
 
@@ -74,6 +79,20 @@ def load_knowledge_base():
             return f.read()
     except:
         return "No knowledge base available."
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def generate_key_from_password(password, salt):
+    """Generate encryption key from password"""
+    kdf = PBKDF2(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+    return key
 
 @app.route('/')
 def home():
@@ -211,24 +230,6 @@ Instructions:
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-    # File encryption configuration
-UPLOAD_FOLDER = '/tmp/uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'zip'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def generate_key_from_password(password, salt):
-    """Generate encryption key from password"""
-    kdf = PBKDF2(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=100000,
-    )
-    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
-    return key
 
 @app.route('/encryption')
 def encryption():

@@ -1,29 +1,7 @@
-{% extends "base.html" %}
-
-{% block title %}Projects - Bryan Petrie{% endblock %}
-
-{% block content %}
-<div class="projects-container">
-    <h1>My Projects</h1>
-    
-    {% if error %}
-    <p class="error">{{ error }}</p>
-    {% endif %}
-
-    {% if projects %}
-    <div class="projects-grid">
-        {% for project in projects %}
-        <div class="project-card">
-            <h3>{{ project.name }}</h3>
-            <p>{{ project.description }}</p>
-            <div class="technologies">
-                <strong>Technologies:</strong> {{ project.technologies }}
-            </div>
-        </div>
-        {% endfor %}
+{% endfor %}
     </div>
     
-    <!-- AI Sentiment Analysis Card -->
+    <!-- AI Powered Tools Section -->
     <div class="ai-section">
         <h2>Try AI-Powered Tools</h2>
         <div class="ai-tools-grid">
@@ -44,8 +22,9 @@
                 </div>
                 <a href="/image-analysis" class="btn btn-small">Try Image Analysis</a>
             </div>
+            
             <div class="project-card ai-card">
-                <h3>💬 AI Chatbot (RAG)</h3>
+                <h3>🤖 AI Chatbot (RAG)</h3>
                 <p>Chat with an AI assistant that knows all about Bryan! Uses Retrieval-Augmented Generation (RAG) with Azure OpenAI to answer questions based on a curated knowledge base.</p>
                 <div class="technologies">
                     <strong>Technologies:</strong> Azure OpenAI, RAG, GPT-4, Python, Flask
@@ -54,17 +33,20 @@
             </div>
         </div>
     </div>
-    <div class="project-card ai-card">
-        <h3>🔒 File Encryption Tool</h3>
-        <p>Secure file encryption and decryption using AES-256 encryption. Upload any file, protect it with a password, and safely decrypt it later.</p>
-        <div class="technologies">
-            <strong>Technologies:</strong> Python, Cryptography, AES-256, Flask
+    
+    <!-- Security Tools Section -->
+    <div class="security-section">
+        <h2>Try Security Tools</h2>
+        <div class="security-tools-grid">
+            <div class="project-card security-card">
+                <h3>🔒 File Encryption</h3>
+                <p>Secure file encryption and decryption using AES-256 encryption. Upload any file, protect it with a password, and safely decrypt it later with military-grade security.</p>
+                <div class="technologies">
+                    <strong>Technologies:</strong> Python, Cryptography, AES-256, PBKDF2, Flask
+                </div>
+                <a href="/encryption" class="btn btn-small">Try Encryption Tool</a>
+            </div>
         </div>
-        <a href="/encryption" class="btn btn-small">Try Encryption Tool</a>
     </div>
     
     {% else %}
-    <p>No projects found. Add some projects to your database!</p>
-    {% endif %}
-</div>
-{% endblock %}

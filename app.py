@@ -7,6 +7,11 @@ from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from azure.core.credentials import AzureKeyCredential as VisionKeyCredential
 from openai import AzureOpenAI
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2
+from werkzeug.utils import secure_filename
+import base64
 
 load_dotenv()
 
@@ -206,6 +211,116 @@ Instructions:
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+    # File encryption configuration
+UPLOAD_FOLDER = '/tmp/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'zip'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def generate_key_from_password(password, salt):
+    """Generate encryption key from password"""
+    kdf = PBKDF2(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+    return key
+
+@app.route('/encryption')
+def encryption():
+    return render_template('encryption.html')
+
+@app.route('/encrypt-file', methods=['POST'])
+def encrypt_file():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        password = request.form.get('password', '')
+        
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not password:
+            return jsonify({'error': 'Password is required'}), 400
+        
+        if file and allowed_file(file.filename):
+            # Read file data
+            file_data = file.read()
+            
+            # Generate salt and key
+            salt = os.urandom(16)
+            key = generate_key_from_password(password, salt)
+            
+            # Encrypt the file
+            fernet = Fernet(key)
+            encrypted_data = fernet.encrypt(file_data)
+            
+            # Combine salt + encrypted data
+            final_data = salt + encrypted_data
+            
+            # Encode to base64 for JSON response
+            encrypted_base64 = base64.b64encode(final_data).decode('utf-8')
+            
+            return jsonify({
+                'success': True,
+                'encrypted_data': encrypted_base64,
+                'filename': secure_filename(file.filename) + '.encrypted'
+            })
+        else:
+            return jsonify({'error': 'File type not allowed'}), 400
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/decrypt-file', methods=['POST'])
+def decrypt_file():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        password = request.form.get('password', '')
+        
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not password:
+            return jsonify({'error': 'Password is required'}), 400
+        
+        # Read encrypted file
+        encrypted_file_data = file.read()
+        
+        # Extract salt (first 16 bytes) and encrypted data
+        salt = encrypted_file_data[:16]
+        encrypted_data = encrypted_file_data[16:]
+        
+        # Generate key from password
+        key = generate_key_from_password(password, salt)
+        
+        # Decrypt the file
+        fernet = Fernet(key)
+        decrypted_data = fernet.decrypt(encrypted_data)
+        
+        # Encode to base64 for JSON response
+        decrypted_base64 = base64.b64encode(decrypted_data).decode('utf-8')
+        
+        # Remove .encrypted extension if present
+        original_filename = file.filename.replace('.encrypted', '')
+        
+        return jsonify({
+            'success': True,
+            'decrypted_data': decrypted_base64,
+            'filename': secure_filename(original_filename)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': 'Decryption failed. Wrong password or corrupted file.'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

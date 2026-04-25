@@ -1,0 +1,533 @@
+{% extends "base.html" %}
+
+{% block title %}Hash Verifier - Bryan Petrie{% endblock %}
+
+{% block content %}
+<div class="hash-container">
+    <h1>✅ File Hash Verifier</h1>
+    <p>Calculate and verify file checksums for integrity verification</p>
+    
+    <div class="hash-section">
+        <h2>Calculate File Hash</h2>
+        <p class="info">Upload any file to calculate its cryptographic hash values</p>
+        
+        <form id="hashForm" enctype="multipart/form-data">
+            <div class="file-input-wrapper">
+                <label for="hashFile" class="file-label">
+                    <span id="hashFileName">Choose file to hash...</span>
+                    <input type="file" id="hashFile" name="file">
+                </label>
+            </div>
+            
+            <button type="submit" class="btn">Calculate Hashes</button>
+        </form>
+        
+        <div id="hashResults" class="hash-results hidden">
+            <div class="file-info">
+                <h3>File Information</h3>
+                <div class="info-row">
+                    <strong>Filename:</strong>
+                    <span id="fileName"></span>
+                </div>
+                <div class="info-row">
+                    <strong>Size:</strong>
+                    <span id="fileSize"></span>
+                </div>
+            </div>
+            
+            <div class="hash-list">
+                <h3>Calculated Hashes</h3>
+                
+                <div class="hash-item">
+                    <div class="hash-header">
+                        <strong>MD5</strong>
+                        <button onclick="copyHash('md5')" class="copy-btn">Copy</button>
+                    </div>
+                    <input type="text" id="md5Hash" readonly class="hash-value">
+                </div>
+                
+                <div class="hash-item">
+                    <div class="hash-header">
+                        <strong>SHA-1</strong>
+                        <button onclick="copyHash('sha1')" class="copy-btn">Copy</button>
+                    </div>
+                    <input type="text" id="sha1Hash" readonly class="hash-value">
+                </div>
+                
+                <div class="hash-item">
+                    <div class="hash-header">
+                        <strong>SHA-256</strong>
+                        <button onclick="copyHash('sha256')" class="copy-btn">Copy</button>
+                    </div>
+                    <input type="text" id="sha256Hash" readonly class="hash-value">
+                </div>
+                
+                <div class="hash-item">
+                    <div class="hash-header">
+                        <strong>SHA-512</strong>
+                        <button onclick="copyHash('sha512')" class="copy-btn">Copy</button>
+                    </div>
+                    <input type="text" id="sha512Hash" readonly class="hash-value">
+                </div>
+            </div>
+            
+            <div class="verify-section">
+                <h3>Verify Hash (Optional)</h3>
+                <p class="info-small">Paste an expected hash value to verify file integrity</p>
+                
+                <div class="verify-inputs">
+                    <select id="hashType" class="hash-select">
+                        <option value="md5">MD5</option>
+                        <option value="sha1">SHA-1</option>
+                        <option value="sha256" selected>SHA-256</option>
+                        <option value="sha512">SHA-512</option>
+                    </select>
+                    
+                    <input type="text" id="expectedHash" placeholder="Paste expected hash here..." class="expected-hash">
+                    
+                    <button onclick="verifyHash()" class="btn btn-small">Verify</button>
+                </div>
+                
+                <div id="verifyResult" class="verify-result hidden"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="error" class="error hidden"></div>
+    
+    <div class="info-section">
+        <h3>📚 About Hash Functions</h3>
+        <div class="hash-info-grid">
+            <div class="hash-info-card">
+                <h4>MD5</h4>
+                <p>128-bit hash. Fast but <strong>not cryptographically secure</strong>. Use only for non-security checksums.</p>
+            </div>
+            <div class="hash-info-card">
+                <h4>SHA-1</h4>
+                <p>160-bit hash. <strong>Deprecated for security</strong>. Still used for Git commits and legacy systems.</p>
+            </div>
+            <div class="hash-info-card">
+                <h4>SHA-256</h4>
+                <p>256-bit hash. <strong>Industry standard</strong>. Secure and widely used for file verification.</p>
+            </div>
+            <div class="hash-info-card">
+                <h4>SHA-512</h4>
+                <p>512-bit hash. <strong>Most secure</strong>. Slower but provides maximum collision resistance.</p>
+            </div>
+        </div>
+        
+        <div class="use-cases">
+            <h4>Common Use Cases:</h4>
+            <ul>
+                <li><strong>Download Verification:</strong> Verify downloaded files haven't been tampered with</li>
+                <li><strong>File Integrity:</strong> Detect file corruption or unauthorized changes</li>
+                <li><strong>Software Distribution:</strong> Publishers provide hashes to verify authentic downloads</li>
+                <li><strong>Backup Verification:</strong> Ensure backup files match originals</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+.hash-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hash-container h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.hash-container > p {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+.hash-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.hash-section h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.info {
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+.info-small {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.file-input-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.file-label {
+    display: block;
+    padding: 2rem;
+    background: #f8f9fa;
+    border: 2px dashed #3498db;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.file-label:hover {
+    background: #e8f4f8;
+    border-color: #2980b9;
+}
+
+.file-label input[type="file"] {
+    display: none;
+}
+
+#hashFileName {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.hash-results {
+    margin-top: 2rem;
+}
+
+.file-info {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.file-info h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.hash-list h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.hash-item {
+    margin-bottom: 1.5rem;
+}
+
+.hash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.hash-header strong {
+    color: #2c3e50;
+}
+
+.copy-btn {
+    padding: 0.3rem 0.8rem;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.copy-btn:hover {
+    background: #2980b9;
+}
+
+.hash-value {
+    width: 100%;
+    padding: 0.8rem;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.verify-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e0e0e0;
+}
+
+.verify-section h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.verify-inputs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.hash-select {
+    padding: 0.8rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.expected-hash {
+    flex: 1;
+    padding: 0.8rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.expected-hash:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.verify-result {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.verify-result.match {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.verify-result.no-match {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.hidden {
+    display: none;
+}
+
+.error {
+    background: #e74c3c;
+    color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+}
+
+.info-section {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+.info-section h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.hash-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.hash-info-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.hash-info-card h4 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.hash-info-card p {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+.use-cases {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.use-cases h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.use-cases ul {
+    margin-left: 1.5rem;
+}
+
+.use-cases li {
+    margin-bottom: 0.8rem;
+    color: #555;
+}
+</style>
+
+<script>
+let currentHashes = {};
+
+document.getElementById('hashFile').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name || 'Choose file to hash...';
+    document.getElementById('hashFileName').textContent = fileName;
+});
+
+document.getElementById('hashForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    document.getElementById('error').classList.add('hidden');
+    document.getElementById('hashResults').classList.add('hidden');
+    document.getElementById('verifyResult').classList.add('hidden');
+    
+    try {
+        const response = await fetch('/calculate-hash', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            document.getElementById('error').textContent = data.error;
+            document.getElementById('error').classList.remove('hidden');
+            return;
+        }
+        
+        // Store hashes
+        currentHashes = {
+            md5: data.md5,
+            sha1: data.sha1,
+            sha256: data.sha256,
+            sha512: data.sha512
+        };
+        
+        // Display file info
+        document.getElementById('fileName').textContent = data.filename;
+        document.getElementById('fileSize').textContent = formatBytes(data.size);
+        
+        // Display hashes
+        document.getElementById('md5Hash').value = data.md5;
+        document.getElementById('sha1Hash').value = data.sha1;
+        document.getElementById('sha256Hash').value = data.sha256;
+        document.getElementById('sha512Hash').value = data.sha512;
+        
+        document.getElementById('hashResults').classList.remove('hidden');
+        
+    } catch (error) {
+        document.getElementById('error').textContent = 'Failed to calculate hash: ' + error;
+        document.getElementById('error').classList.remove('hidden');
+    }
+});
+
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+function copyHash(type) {
+    const input = document.getElementById(type + 'Hash');
+    input.select();
+    document.execCommand('copy');
+    
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+        btn.textContent = originalText;
+    }, 2000);
+}
+
+async function verifyHash() {
+    const hashType = document.getElementById('hashType').value;
+    const expectedHash = document.getElementById('expectedHash').value.trim();
+    
+    if (!expectedHash) {
+        alert('Please enter an expected hash value');
+        return;
+    }
+    
+    const calculatedHash = currentHashes[hashType];
+    
+    if (!calculatedHash) {
+        alert('Please calculate file hashes first');
+        return;
+    }
+    
+    document.getElementById('error').classList.add('hidden');
+    
+    try {
+        const response = await fetch('/verify-hash', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                calculated_hash: calculatedHash,
+                expected_hash: expectedHash
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            document.getElementById('error').textContent = data.error;
+            document.getElementById('error').classList.remove('hidden');
+            return;
+        }
+        
+        const resultDiv = document.getElementById('verifyResult');
+        
+        if (data.match) {
+            resultDiv.className = 'verify-result match';
+            resultDiv.textContent = '✅ MATCH! The hashes are identical. File integrity verified.';
+        } else {
+            resultDiv.className = 'verify-result no-match';
+            resultDiv.textContent = '❌ NO MATCH! The hashes differ. File may be corrupted or tampered with.';
+        }
+        
+        resultDiv.classList.remove('hidden');
+        
+    } catch (error) {
+        document.getElementById('error').textContent = 'Failed to verify hash: ' + error;
+        document.getElementById('error').classList.remove('hidden');
+    }
+}
+</script>
+{% endblock %}

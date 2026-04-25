@@ -15,6 +15,7 @@ import base64
 import zxcvbn
 import secrets
 import string
+import hashlib
 
 load_dotenv()
 
@@ -411,6 +412,63 @@ def generate_password():
         
         return jsonify({
             'password': password
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/hash-verifier')
+def hash_verifier():
+    return render_template('hash_verifier.html')
+
+@app.route('/calculate-hash', methods=['POST'])
+def calculate_hash():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        # Read file data
+        file_data = file.read()
+        
+        # Calculate all hash types
+        md5_hash = hashlib.md5(file_data).hexdigest()
+        sha1_hash = hashlib.sha1(file_data).hexdigest()
+        sha256_hash = hashlib.sha256(file_data).hexdigest()
+        sha512_hash = hashlib.sha512(file_data).hexdigest()
+        
+        return jsonify({
+            'filename': file.filename,
+            'size': len(file_data),
+            'md5': md5_hash,
+            'sha1': sha1_hash,
+            'sha256': sha256_hash,
+            'sha512': sha512_hash
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/verify-hash', methods=['POST'])
+def verify_hash():
+    try:
+        data = request.json
+        calculated_hash = data.get('calculated_hash', '').lower().strip()
+        expected_hash = data.get('expected_hash', '').lower().strip()
+        
+        if not calculated_hash or not expected_hash:
+            return jsonify({'error': 'Both hashes required'}), 400
+        
+        match = calculated_hash == expected_hash
+        
+        return jsonify({
+            'match': match,
+            'calculated': calculated_hash,
+            'expected': expected_hash
         })
         
     except Exception as e:

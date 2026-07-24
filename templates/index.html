@@ -1,35 +1,122 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="hero">
-    <h1>Bryan Petrie</h1>
-    <h2>Software Engineering & Information Technology</h2>
-    <p>Dual-sport athlete and software developer specializing in full-stack development and cloud solutions</p>
-    <div class="hero-buttons">
-        <a href="/projects" class="btn">View Projects</a>
-        <a href="mailto:Petrieb601@gmail.com" class="btn btn-secondary">Contact Me</a>
-    </div>
-</div>
+<section class="hero">
+    <p class="hero-kicker"><span class="k-line"></span>Bryan Petrie &nbsp;/&nbsp; <b>artificial intelligence</b> &middot; security &middot; cloud</p>
 
-<div class="skills-section">
-    <h2>Technical Skills</h2>
-    <div class="skills-grid">
-        <div class="skill-card">
+    <h1>
+        <span class="line"><span>Don't read my résumé.</span></span>
+        <span class="line"><span class="accent">Try it!</span></span>
+    </h1>
+
+    <div class="hero-meta">
+        <div>
+            <p class="hero-sub">Every tool on this site is a <b>working demo</b> I built and deployed — Azure AI, AES-256 encryption, retrieval-augmented chat over my own knowledge base. Open one and try to break it.</p>
+            <div class="hero-buttons">
+                <a href="#tools" class="btn">Run the tools</a>
+                <a href="/projects" class="btn btn-secondary">See the work</a>
+            </div>
+        </div>
+        <div class="hero-counter">
+            <span class="num">06<span class="of"> / live</span></span>
+            <span class="cap"><a href="#tools">working tools &darr;</a></span>
+        </div>
+    </div>
+
+    <div class="hero-strip">
+        <span class="strip-item"><span class="live"></span><span class="lbl">status</span> deployed on Azure</span>
+        <span class="strip-item"><span class="lbl">now</span> adversarial ML research @ UNO</span>
+        <span class="strip-item"><span class="lbl">stack</span> Python · Flask · GitHub Actions</span>
+        <span class="strip-item"><span class="lbl">links</span> <a href="https://github.com/petrieb601-eng" target="_blank" rel="noopener">GitHub</a> · <a href="mailto:Petrieb601@gmail.com">Email</a></span>
+    </div>
+</section>
+
+<section class="section" id="tools">
+    <div class="section-head">
+        <p class="eyebrow">live demos</p>
+        <h2 class="section-title">Six tools you can <span class="it">run</span>.</h2>
+    </div>
+
+    <div class="tool-index">
+        <a class="tool-row" href="/sentiment">
+            <span class="tool-num">01</span>
+            <span class="tool-main">
+                <span class="tool-cat">ai / nlp</span>
+                <span class="tool-name">Sentiment analysis</span>
+                <span class="tool-desc">Azure Language scores any text positive, neutral, or negative — with per-class confidence.</span>
+            </span>
+            <span class="tool-go">run <span class="arr">&#8599;</span></span>
+        </a>
+        <a class="tool-row" href="/image-analysis">
+            <span class="tool-num">02</span>
+            <span class="tool-main">
+                <span class="tool-cat">ai / vision</span>
+                <span class="tool-name">Image analysis</span>
+                <span class="tool-desc">Computer Vision captions an image, tags what it sees, detects objects, and reads embedded text.</span>
+            </span>
+            <span class="tool-go">run <span class="arr">&#8599;</span></span>
+        </a>
+        <a class="tool-row" href="/chatbot">
+            <span class="tool-num">03</span>
+            <span class="tool-main">
+                <span class="tool-cat">ai / rag</span>
+                <span class="tool-name">RAG chatbot</span>
+                <span class="tool-desc">GPT-4 grounded in a curated knowledge base about me. Ask it my GPA — it knows.</span>
+            </span>
+            <span class="tool-go">run <span class="arr">&#8599;</span></span>
+        </a>
+        <a class="tool-row" href="/encryption">
+            <span class="tool-num">04</span>
+            <span class="tool-main">
+                <span class="tool-cat">security / crypto</span>
+                <span class="tool-name">File encryption</span>
+                <span class="tool-desc">AES-256 with PBKDF2 key derivation and a unique salt per file. Encrypt, download, decrypt.</span>
+            </span>
+            <span class="tool-go">run <span class="arr">&#8599;</span></span>
+        </a>
+        <a class="tool-row" href="/password-checker">
+            <span class="tool-num">05</span>
+            <span class="tool-main">
+                <span class="tool-cat">security / audit</span>
+                <span class="tool-name">Password analyzer</span>
+                <span class="tool-desc">Entropy analysis with crack-time estimates, plus a cryptographically secure generator.</span>
+            </span>
+            <span class="tool-go">run <span class="arr">&#8599;</span></span>
+        </a>
+        <a class="tool-row" href="/hash-verifier">
+            <span class="tool-num">06</span>
+            <span class="tool-main">
+                <span class="tool-cat">security / integrity</span>
+                <span class="tool-name">Hash verifier</span>
+                <span class="tool-desc">MD5 through SHA-512 checksums for any file, with built-in tamper verification.</span>
+            </span>
+            <span class="tool-go">run <span class="arr">&#8599;</span></span>
+        </a>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-head">
+        <p class="eyebrow">stack</p>
+        <h2 class="section-title">What it's <span class="it">built</span> with.</h2>
+    </div>
+    <div class="stack-grid">
+        <div class="stack-card">
             <h3>Programming</h3>
             <p>Python, Java, SQL, HTML/CSS, PowerShell</p>
         </div>
-        <div class="skill-card">
-            <h3>Cloud & Systems</h3>
-            <p>Azure, VM Management, Network Administration</p>
+        <div class="stack-card">
+            <h3>Cloud &amp; systems</h3>
+            <p>Azure, VM management, network administration, GitHub Actions CI/CD</p>
         </div>
-        <div class="skill-card">
+        <div class="stack-card">
             <h3>Development</h3>
-            <p>Flask, Database Design, Object-Oriented Programming</p>
+            <p>Flask, database design, object-oriented programming</p>
         </div>
-        <div class="skill-card">
-            <h3>AI & Machine Learning</h3>
-            <p>Azure Cognitive Services, Natural Language Processing, Computer Vision, Sentiment Analysis</p>
+        <div class="stack-card">
+            <h3>AI &amp; ML</h3>
+            <p>Azure Cognitive Services, NLP, computer vision, retrieval-augmented generation</p>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

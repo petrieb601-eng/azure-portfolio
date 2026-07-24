@@ -16,6 +16,7 @@ import zxcvbn
 import secrets
 import string
 import hashlib
+import json
 
 load_dotenv()
 
@@ -105,6 +106,10 @@ def home():
 @app.route('/projects')
 def projects():
     return render_template('projects.html', projects=fake_projects)
+
+@app.route('/research')
+def research():
+    return render_template('research.html')
 
 @app.route('/about')
 def about():
@@ -473,6 +478,204 @@ def verify_hash():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# ============================================================
+# Code viewer — serves real source files from the projects
+# ============================================================
+CODE_SAMPLES = {
+    'mnist-cnn': {
+        'file': 'main.py', 'filename': 'main.py',
+        'eyebrow': 'research · model', 'title': 'MNIST CNN — training',
+        'lang': 'python', 'lang_label': 'python',
+        'description': "The full PyTorch training loop for a LeNet-style convolutional network on MNIST. Produces the mnist_cnn.pt checkpoint used as the white-box target for the FGSM attack.",
+        'note': None,
+    },
+    'cifar10-cnn': {
+        'file': 'train_cifar10.py', 'filename': 'train_cifar10.py',
+        'eyebrow': 'research · model', 'title': 'CIFAR-10 CNN — training',
+        'lang': 'python', 'lang_label': 'python',
+        'description': "Trains a deeper CNN on CIFAR-10 (3-channel, 10 classes), saving cifar10_model.pth — the target for the CIFAR attack scripts.",
+        'note': None,
+    },
+    'fgsm': {
+        'file': 'fgsm_cifar10.py', 'filename': 'fgsm_cifar10.py',
+        'eyebrow': 'research · attack', 'title': 'FGSM — Fast Gradient Sign Method',
+        'lang': 'python', 'lang_label': 'python',
+        'description': "A single signed step along the loss gradient, bounded by an L-infinity epsilon budget, run against the CIFAR-10 CNN. Sweeps and plots accuracy versus epsilon.",
+        'note': None,
+    },
+    'pgd': {
+        'file': 'pgd_cifar10.py', 'filename': 'pgd_cifar10.py',
+        'eyebrow': 'research · attack', 'title': 'PGD — Projected Gradient Descent',
+        'lang': 'python', 'lang_label': 'python',
+        'description': "The iterative, multi-step successor to FGSM: repeatedly step along the gradient and project back into the epsilon-ball. Plots accuracy versus epsilon for the CIFAR-10 CNN.",
+        'note': None,
+    },
+    'geoshield': {
+        'file': 'geoshield_attack.py', 'filename': 'geoshield_attack.py',
+        'eyebrow': 'research · privacy', 'title': 'GeoShield — geo-privacy attack',
+        'lang': 'python', 'lang_label': 'python',
+        'description': "Perturbs an image through CLIP gradients so a vision-language model (LLaVA) can no longer infer where the photo was taken, while leaving it visually unchanged. 200-step PGD.",
+        'note': "Runs locally against CLIP (ViT-B/32) and a LLaVA model served through Ollama.",
+    },
+    'wriva-attack': {
+        'file': 'wriva_attack.py', 'filename': 'attacks/wriva_attack.py',
+        'eyebrow': 'research · wriva track', 'title': 'WRIVA — two-stage attack on DINOv3',
+        'lang': 'python', 'lang_label': 'python / pytorch',
+        'description': "The V11 two-stage pipeline ported to FlexGeoApprox, the DINOv3-backed geo-localization model in the WRIVA evaluation stack. Momentum PGD under EOT, hierarchical cross-site then same-site targeting, cached satellite chip embeddings, and checkpointed resume across both stages.",
+        'note': "Run against the WRIVA-CVGL-DEV split on a shared RTX 5090. Absolute paths and lab host details have been removed for publication.",
+        'back_href': '/research#wriva', 'back_label': 'back to research',
+    },
+    'biteright-server': {
+        'file': 'biteright/server_index.js', 'filename': 'server/src/index.js',
+        'eyebrow': 'application · backend', 'title': 'BiteRight — Express server',
+        'lang': 'javascript', 'lang_label': 'node / express',
+        'description': "The API entry point — wires up middleware and mounts the auth, foods, data, payments, premium and AI route modules.",
+        'note': "One module from the full-stack BiteRight repository (React + Node/Express).",
+    },
+    'biteright-payments': {
+        'file': 'biteright/payments.js', 'filename': 'server/src/routes/payments.js',
+        'eyebrow': 'application · billing', 'title': 'BiteRight — Stripe billing',
+        'lang': 'javascript', 'lang_label': 'node / stripe',
+        'description': "Checkout sessions, the webhook that flips a user's premium flag, and the server-authoritative premium gating — the client never controls billing state.",
+        'note': "One module from the full-stack BiteRight repository (React + Node/Express).",
+    },
+    'biteright-app': {
+        'file': 'biteright/App.jsx', 'filename': 'web/src/App.jsx',
+        'eyebrow': 'application · frontend', 'title': 'BiteRight — React app shell',
+        'lang': 'javascript', 'lang_label': 'react',
+        'description': "The app shell — local-first state, auth and session handling, view routing, and the sync-on-sign-in logic.",
+        'note': "One module from the full-stack BiteRight repository (React + Node/Express).",
+    },
+}
+
+
+@app.route('/code/<key>')
+def view_code(key):
+    meta = CODE_SAMPLES.get(key)
+    if not meta:
+        return ('Not found', 404)
+    path = os.path.join(app.root_path, 'code_samples', meta['file'])
+    try:
+        with open(path, 'r', encoding='utf-8', errors='replace') as f:
+            code = f.read()
+    except FileNotFoundError:
+        return ('Source file not found', 404)
+    return render_template(
+        'code_view.html',
+        eyebrow=meta['eyebrow'], title=meta['title'], description=meta['description'],
+        code=code, lang=meta['lang'], lang_label=meta['lang_label'],
+        filename=meta['filename'], lines=len(code.splitlines()), note=meta.get('note'),
+        back_href=meta.get('back_href', '/projects'),
+        back_label=meta.get('back_label', 'back to projects'),
+    )
+
+
+# ============================================================
+# Task Manager API — ported from the PHP/JSON backend
+# ============================================================
+TASKS_FILE = os.path.join(app.root_path, 'data', 'tasks.json')
+
+
+def _load_tasks():
+    try:
+        with open(TASKS_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            return {'tasks': [], 'nextId': 1}
+        data.setdefault('tasks', [])
+        data.setdefault('nextId', 1)
+        return data
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {'tasks': [], 'nextId': 1}
+
+
+def _save_tasks(data):
+    os.makedirs(os.path.dirname(TASKS_FILE), exist_ok=True)
+    with open(TASKS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2)
+
+
+@app.route('/api/tasks', methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+def api_tasks():
+    from datetime import datetime, timezone
+    data = _load_tasks()
+    method = request.method
+
+    if method == 'GET':
+        tasks = list(data['tasks'])
+        col = request.args.get('column')
+        if col:
+            tasks = [t for t in tasks if t.get('column') == col]
+        tasks.sort(key=lambda t: t.get('position', 0))
+        return jsonify({'tasks': tasks})
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    if method == 'POST':
+        body = request.get_json(silent=True) or {}
+        for field in ('title', 'column'):
+            if not body.get(field):
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        col_tasks = [t for t in data['tasks'] if t.get('column') == body['column']]
+        max_pos = max([t.get('position', 0) for t in col_tasks], default=-1)
+        task = {
+            'id': data['nextId'],
+            'title': body['title'].strip(),
+            'description': (body.get('description') or '').strip(),
+            'column': body['column'],
+            'priority': body.get('priority', 'medium'),
+            'dueDate': body.get('dueDate'),
+            'subtasks': body.get('subtasks', []),
+            'position': max_pos + 1,
+            'completed': False,
+            'createdAt': now,
+            'updatedAt': now,
+        }
+        data['nextId'] += 1
+        data['tasks'].append(task)
+        _save_tasks(data)
+        return jsonify({'task': task}), 201
+
+    try:
+        task_id = int(request.args.get('id', 0))
+    except (TypeError, ValueError):
+        task_id = 0
+    if task_id <= 0:
+        return jsonify({'error': 'Invalid task ID'}), 400
+
+    if method == 'DELETE':
+        before = len(data['tasks'])
+        data['tasks'] = [t for t in data['tasks'] if t.get('id') != task_id]
+        if len(data['tasks']) == before:
+            return jsonify({'error': 'Task not found'}), 404
+        _save_tasks(data)
+        return jsonify({'message': 'Task deleted'})
+
+    body = request.get_json(silent=True) or {}
+    target = next((t for t in data['tasks'] if t.get('id') == task_id), None)
+    if target is None:
+        return jsonify({'error': 'Task not found'}), 404
+
+    if method == 'PUT':
+        target['title'] = (body.get('title', target['title']) or '').strip()
+        target['description'] = (body.get('description', target.get('description', '')) or '').strip()
+        target['column'] = body.get('column', target['column'])
+        target['priority'] = body.get('priority', target['priority'])
+        target['dueDate'] = body.get('dueDate', target.get('dueDate'))
+        target['subtasks'] = body.get('subtasks', target.get('subtasks', []))
+        target['completed'] = body.get('completed', target.get('completed', False))
+        target['position'] = body.get('position', target.get('position', 0))
+        target['updatedAt'] = now
+    else:  # PATCH
+        for k, v in body.items():
+            if k in target and k not in ('id', 'createdAt'):
+                target[k] = v
+        target['updatedAt'] = now
+
+    _save_tasks(data)
+    return jsonify({'task': target})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

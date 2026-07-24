@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaultlock — client-side AES-256-GCM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0B0E14;--panel:#11161F;--panel-2:#171E2B;--line:#222B3B;--line-strong:#313D52;
+  --text:#E9ECF3;--muted:#8C95A8;--faint:#5B6478;--amber:#FFB300;--amber-bright:#FFC533;
+  --amber-soft:rgba(255,179,0,.12);--ok:#4ADE80;--bad:#F87171;
+  --display:"Archivo",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);background:var(--void);color:var(--text);line-height:1.6;min-height:100vh;font-size:16px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:2rem 20px 4rem}
+a.back{display:inline-block;font-family:var(--mono);font-size:.8rem;color:var(--muted);text-decoration:none;margin-bottom:1.75rem}
+a.back:hover{color:var(--amber)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:.5rem}
+h1{font-family:var(--display);font-weight:800;font-size:2.1rem;letter-spacing:-.01em;margin-bottom:.4rem}
+.sub{color:var(--muted);max-width:60ch;margin-bottom:1.25rem}
+.privacy{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.74rem;color:var(--ok);background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);border-radius:6px;padding:.55rem .8rem;margin-bottom:2rem}
+.privacy .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px rgba(74,222,128,.6)}
+.tabs{display:flex;gap:.4rem;margin-bottom:1.25rem}
+.tab{flex:0 0 auto;font-family:var(--mono);font-size:.82rem;letter-spacing:.04em;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:.5rem 1rem;cursor:pointer;transition:.15s}
+.tab:hover{border-color:var(--line-strong);color:var(--text)}
+.tab.active{color:var(--void);background:var(--amber);border-color:var(--amber);font-weight:500}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:1.5rem}
+label{display:block;font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.pass-row{display:flex;gap:.5rem;margin-bottom:.4rem}
+input[type=text],input[type=password],textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:.9rem;padding:.7rem .8rem;transition:.15s}
+input:focus,textarea:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
+textarea{resize:vertical;min-height:120px;line-height:1.5}
+.btn{font-family:var(--mono);font-size:.82rem;letter-spacing:.03em;font-weight:500;border:none;border-radius:6px;padding:.7rem 1.1rem;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn-amber{background:var(--amber);color:var(--void)}
+.btn-amber:hover{background:var(--amber-bright)}
+.btn-ghost{background:var(--panel-2);color:var(--muted);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--line-strong);color:var(--text)}
+.strength{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin:.5rem 0 .25rem}
+.strength span{display:block;height:100%;width:0;transition:.3s}
+.strength-label{font-family:var(--mono);font-size:.72rem;color:var(--faint);min-height:1em}
+.field{margin-bottom:1.25rem}
+.run{width:100%;margin-top:.25rem;padding:.85rem;font-size:.9rem}
+.out-label{display:flex;justify-content:space-between;align-items:center}
+.copy{font-family:var(--mono);font-size:.7rem;color:var(--amber);background:none;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:.06em}
+.copy:hover{color:var(--amber-bright)}
+.output{margin-top:1.5rem;display:none}
+.output.show{display:block}
+.output textarea{background:#0d1119;color:var(--amber);min-height:90px}
+.msg{font-family:var(--mono);font-size:.78rem;margin-top:.6rem;min-height:1.1em}
+.msg.err{color:var(--bad)}
+.msg.ok{color:var(--ok)}
+.foot{font-family:var(--mono);font-size:.72rem;color:var(--faint);margin-top:2rem;line-height:1.7}
+.foot b{color:var(--muted);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/projects">&larr; back to projects</a>
+  <p class="eyebrow">security &middot; web crypto api</p>
+  <h1>Vaultlock</h1>
+  <p class="sub">Authenticated AES-256-GCM encryption that runs entirely in your browser. Keys are derived from your passphrase with PBKDF2 (100k iterations, SHA-256).</p>
+  <div class="privacy"><span class="dot"></span>your data never leaves this tab &mdash; no server, no network calls</div>
+
+  <div class="tabs">
+    <button class="tab active" data-mode="encrypt">Encrypt</button>
+    <button class="tab" data-mode="decrypt">Decrypt</button>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label for="pass">Passphrase</label>
+      <div class="pass-row">
+        <input type="password" id="pass" placeholder="Enter a strong passphrase" autocomplete="off">
+        <button class="btn btn-ghost" id="genBtn" title="Generate passphrase">Generate</button>
+      </div>
+      <div class="strength"><span id="strengthBar"></span></div>
+      <div class="strength-label" id="strengthLabel"></div>
+    </div>
+
+    <div class="field">
+      <label for="input" id="inputLabel">Plaintext</label>
+      <textarea id="input" placeholder="Type or paste your text here"></textarea>
+    </div>
+
+    <button class="btn btn-amber run" id="runBtn">Encrypt</button>
+    <div class="msg" id="msg"></div>
+
+    <div class="output" id="outputWrap">
+      <div class="out-label">
+        <label for="output" id="outputLabel">Ciphertext (base64)</label>
+        <button class="copy" id="copyBtn">copy</button>
+      </div>
+      <textarea id="output" readonly></textarea>
+    </div>
+  </div>
+
+  <div class="foot">
+    <b>algorithm</b> AES-256-GCM &middot; <b>kdf</b> PBKDF2 / SHA-256 / 100k &middot; <b>salt</b> 16 bytes &middot; <b>iv</b> 12 bytes<br>
+    output format: base64( salt &#8214; iv &#8214; ciphertext+tag ) &middot; built with the native Web Crypto API
+  </div>
+</div>
+
+<script src="crypto.js"></script>
+<script>
+(function(){
+  var mode='encrypt';
+  var pass=document.getElementById('pass');
+  var input=document.getElementById('input');
+  var output=document.getElementById('output');
+  var outputWrap=document.getElementById('outputWrap');
+  var msg=document.getElementById('msg');
+  var runBtn=document.getElementById('runBtn');
+  var inputLabel=document.getElementById('inputLabel');
+  var outputLabel=document.getElementById('outputLabel');
+  var bar=document.getElementById('strengthBar');
+  var strengthLabel=document.getElementById('strengthLabel');
+
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+      t.classList.add('active');
+      mode=t.dataset.mode;
+      runBtn.textContent = mode==='encrypt'?'Encrypt':'Decrypt';
+      inputLabel.textContent = mode==='encrypt'?'Plaintext':'Ciphertext (base64)';
+      outputLabel.textContent = mode==='encrypt'?'Ciphertext (base64)':'Plaintext';
+      input.placeholder = mode==='encrypt'?'Type or paste your text here':'Paste the base64 ciphertext here';
+      outputWrap.classList.remove('show'); msg.textContent='';
+    });
+  });
+
+  document.getElementById('genBtn').addEventListener('click',function(){
+    var p=CryptoEngine.generatePassphrase();
+    pass.type='text'; pass.value=p; updateStrength();
+  });
+
+  function updateStrength(){
+    if(!pass.value){bar.style.width='0';strengthLabel.textContent='';return;}
+    var s=CryptoEngine.keyStrength(pass.value);
+    bar.style.width=s.score+'%'; bar.style.background=s.color;
+    strengthLabel.textContent=s.label; strengthLabel.style.color=s.color;
+  }
+  pass.addEventListener('input',updateStrength);
+
+  document.getElementById('copyBtn').addEventListener('click',function(){
+    output.select(); document.execCommand('copy');
+    var c=document.getElementById('copyBtn'); c.textContent='copied'; setTimeout(function(){c.textContent='copy'},1200);
+  });
+
+  runBtn.addEventListener('click',async function(){
+    msg.className='msg'; msg.textContent='';
+    if(!pass.value){msg.classList.add('err');msg.textContent='Enter a passphrase first.';return;}
+    if(!input.value){msg.classList.add('err');msg.textContent='Nothing to '+mode+'.';return;}
+    runBtn.disabled=true; runBtn.textContent='Working…';
+    try{
+      var result;
+      if(mode==='encrypt'){ result=await CryptoEngine.encryptAESGCM(input.value,pass.value); msg.classList.add('ok'); msg.textContent='Encrypted ✓'; }
+      else { result=await CryptoEngine.decryptAESGCM(input.value.trim(),pass.value); msg.classList.add('ok'); msg.textContent='Decrypted ✓'; }
+      output.value=result; outputWrap.classList.add('show');
+    }catch(e){
+      outputWrap.classList.remove('show');
+      msg.classList.add('err');
+      msg.textContent = mode==='decrypt' ? 'Decryption failed — wrong passphrase or corrupted ciphertext.' : 'Error: '+e.message;
+    }
+    runBtn.disabled=false; runBtn.textContent = mode==='encrypt'?'Encrypt':'Decrypt';
+  });
+})();
+</script>
+</body>
+</html>

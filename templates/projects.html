@@ -4,93 +4,167 @@
 
 {% block content %}
 <div class="projects-container">
-    <h1>My Projects</h1>
-    
-    {% if error %}
-    <p class="error">{{ error }}</p>
-    {% endif %}
+    <p class="eyebrow">portfolio</p>
+    <h1>Projects</h1>
+    <p class="page-sub">Research, full-stack applications, and the live tools running on this site.</p>
 
-    {% if projects %}
-    <div class="projects-grid">
-        {% for project in projects %}
-        <div class="project-card">
-            <h3>{{ project.name }}</h3>
-            <p>{{ project.description }}</p>
-            <div class="technologies">
-                <strong>Technologies:</strong> {{ project.technologies }}
-            </div>
+    <!-- Research -->
+    <section class="section-block">
+        <p class="eyebrow">current &middot; uno astar lab</p>
+        <h2 class="section-title">Adversarial ML research</h2>
+        <p class="section-lead">As part of a 9-week NSF REU at the University of Nebraska Omaha's ASTAR Lab under Dr.&nbsp;Peng Jiang, I'm studying adversarial attacks on cross-view geo-localization &mdash; building each attack from first principles on standard datasets before bringing it to a satellite-image retrieval pipeline. Every card below opens the real source.</p>
+        <div class="research-grid">
+
+            <article class="research-card rc-model">
+                <span class="rc-badge">model</span>
+                <h3>MNIST CNN</h3>
+                <p>A convolutional network trained from scratch in PyTorch &mdash; the first white-box target for gradient-based attacks.</p>
+                <div class="rc-spec">pytorch &middot; <b>conv &rarr; conv &rarr; fc</b> &middot; trained locally</div>
+                <div class="card-actions"><a class="btn-code" href="/code/mnist-cnn">main.py</a></div>
+            </article>
+
+            <article class="research-card rc-model">
+                <span class="rc-badge">model</span>
+                <h3>CIFAR-10 CNN</h3>
+                <p>A deeper CNN trained on CIFAR-10 (3-channel, 10 classes) to test how the same attacks behave on natural images.</p>
+                <div class="rc-spec">pytorch &middot; <b>2&times;conv + 2&times;fc</b> &middot; 10 classes</div>
+                <div class="card-actions"><a class="btn-code" href="/code/cifar10-cnn">train_cifar10.py</a></div>
+            </article>
+
+            <article class="research-card rc-attack">
+                <span class="rc-badge">attack</span>
+                <h3>FGSM</h3>
+                <p>Fast Gradient Sign Method &mdash; a single step along the sign of the loss gradient that reliably fools the classifier while staying inside an &epsilon; budget.</p>
+                <div class="rc-spec"><b>single-step</b> &middot; sign(&nabla;loss) &middot; L&infin;</div>
+                <div class="card-actions"><a class="btn-code" href="/code/fgsm">fgsm_cifar10.py</a></div>
+            </article>
+
+            <article class="research-card rc-attack">
+                <span class="rc-badge">attack</span>
+                <h3>PGD</h3>
+                <p>Projected Gradient Descent &mdash; the iterative, multi-step successor to FGSM and the standard strong first-order attack. Plots accuracy vs.&nbsp;&epsilon;.</p>
+                <div class="rc-spec"><b>iterative</b> &middot; multi-step &middot; L&infin; projection</div>
+                <div class="card-actions"><a class="btn-code" href="/code/pgd">pgd_cifar10.py</a></div>
+            </article>
+
+            <article class="research-card rc-defense">
+                <span class="rc-badge">privacy</span>
+                <h3>GeoShield</h3>
+                <p>A privacy attack that perturbs an image so a vision-language model (LLaVA) can no longer guess where it was taken &mdash; maximizing geographic error through CLIP gradients while leaving the photo visually unchanged.</p>
+                <div class="rc-spec">clip vit-b/32 &middot; llava:13b &middot; <b>200-step pgd</b></div>
+                <div class="card-actions"><a class="btn-code" href="/code/geoshield">geoshield_attack.py</a></div>
+            </article>
+
         </div>
-        {% endfor %}
-    </div>
-    
-    <!-- AI Powered Tools Section -->
-    <div class="ai-section">
-        <h2>Try AI-Powered Tools</h2>
+    </section>
+
+    <!-- Applications -->
+    <section class="section-block">
+        <p class="eyebrow">full-stack builds</p>
+        <h2 class="section-title">Applications</h2>
+        <div class="app-grid">
+
+            <article class="app-card">
+                <p class="app-tagline">full-stack</p>
+                <h3>BiteRight</h3>
+                <p>A free, senior-friendly wellness app &mdash; meal logging, gentle fitness, and mood/sleep tracking &mdash; with an optional Stripe-billed Premium tier. Works fully offline in the browser, then syncs to your account once you sign in.</p>
+                <div class="technologies"><strong>Stack:</strong> React (Vite + Tailwind) &middot; Node/Express &middot; JWT auth &middot; Stripe &middot; USDA FoodData Central &middot; AI vision</div>
+                <div class="card-actions">
+                    <a class="btn-code" href="/code/biteright-server">server</a>
+                    <a class="btn-code" href="/code/biteright-payments">stripe billing</a>
+                    <a class="btn-code" href="/code/biteright-app">react app</a>
+                </div>
+            </article>
+
+            <article class="app-card">
+                <p class="app-tagline">web app</p>
+                <h3>Task Manager</h3>
+                <p>A Kanban board with drag-and-drop columns, an analytics dashboard, and a few celebratory confetti bursts when you clear a card. Running live here on a Flask-backed JSON store.</p>
+                <div class="technologies"><strong>Stack:</strong> JavaScript &middot; drag &amp; drop &middot; Flask JSON API</div>
+                <div class="card-actions">
+                    <a class="btn-launch" href="/static/apps/taskmanager/index.html" target="_blank" rel="noopener">launch app</a>
+                </div>
+            </article>
+
+            <article class="app-card">
+                <p class="app-tagline">security</p>
+                <h3>Vaultlock</h3>
+                <p>A zero-dependency, client-side file encryptor &mdash; your data never leaves the browser. Built on the Web Crypto API with authenticated AES-256-GCM and PBKDF2 key derivation.</p>
+                <div class="technologies"><strong>Stack:</strong> JavaScript &middot; Web Crypto API &middot; AES-256-GCM &middot; PBKDF2</div>
+                <div class="card-actions">
+                    <a class="btn-launch" href="/static/apps/vaultlock/index.html" target="_blank" rel="noopener">launch app</a>
+                </div>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- AI Powered Tools -->
+    <div class="ai-section section-block">
+        <p class="eyebrow">live demos</p>
+        <h2>AI tools</h2>
         <div class="ai-tools-grid">
             <div class="project-card ai-card">
-                <h3>💬 Sentiment Analysis</h3>
+                <h3>Sentiment analysis</h3>
                 <p>Use Azure AI to analyze the sentiment of any text in real-time. See how artificial intelligence can determine if text is positive, negative, or neutral.</p>
                 <div class="technologies">
                     <strong>Technologies:</strong> Azure Cognitive Services, NLP, Python, Flask
                 </div>
-                <a href="/sentiment" class="btn btn-small">Try Sentiment Analysis</a>
+                <a href="/sentiment" class="btn btn-small">Run sentiment analysis</a>
             </div>
-            
+
             <div class="project-card ai-card">
-                <h3>🖼️ Image Analysis</h3>
+                <h3>Image analysis</h3>
                 <p>Upload any image URL and let Azure Computer Vision AI describe it, detect objects, read text, and identify key features automatically.</p>
                 <div class="technologies">
                     <strong>Technologies:</strong> Azure Computer Vision, AI, Python, Flask
                 </div>
-                <a href="/image-analysis" class="btn btn-small">Try Image Analysis</a>
+                <a href="/image-analysis" class="btn btn-small">Run image analysis</a>
             </div>
-            
+
             <div class="project-card ai-card">
-                <h3>🤖 AI Chatbot (RAG)</h3>
+                <h3>RAG chatbot</h3>
                 <p>Chat with an AI assistant that knows all about Bryan! Uses Retrieval-Augmented Generation (RAG) with Azure OpenAI to answer questions based on a curated knowledge base.</p>
                 <div class="technologies">
                     <strong>Technologies:</strong> Azure OpenAI, RAG, GPT-4, Python, Flask
                 </div>
-                <a href="/chatbot" class="btn btn-small">Try AI Chatbot</a>
+                <a href="/chatbot" class="btn btn-small">Open the chatbot</a>
             </div>
         </div>
     </div>
-    
-    <!-- Security Tools Section -->
-    <div class="security-section">
-        <h2>Try Security Tools</h2>
+
+    <!-- Security Tools -->
+    <div class="security-section section-block">
+        <p class="eyebrow">live demos</p>
+        <h2>Security tools</h2>
         <div class="security-tools-grid">
             <div class="project-card security-card">
-                <h3>🔒 File Encryption</h3>
+                <h3>File encryption</h3>
                 <p>Secure file encryption and decryption using AES-256 encryption. Upload any file, protect it with a password, and safely decrypt it later with military-grade security.</p>
                 <div class="technologies">
                     <strong>Technologies:</strong> Python, Cryptography, AES-256, PBKDF2, Flask
                 </div>
-                <a href="/encryption" class="btn btn-small">Try Encryption Tool</a>
+                <a href="/encryption" class="btn btn-small">Encrypt a file</a>
             </div>
-            
+
             <div class="project-card security-card">
-                <h3>🔐 Password Security</h3>
+                <h3>Password analyzer</h3>
                 <p>Analyze password strength in real-time with entropy calculations and crack-time estimates. Generate cryptographically secure random passwords with customizable complexity.</p>
                 <div class="technologies">
                     <strong>Technologies:</strong> Python, zxcvbn, Cryptography, Flask
                 </div>
-                <a href="/password-checker" class="btn btn-small">Try Password Tool</a>
+                <a href="/password-checker" class="btn btn-small">Test a password</a>
             </div>
-            
+
             <div class="project-card security-card">
-                <h3>✅ Hash Verifier</h3>
+                <h3>Hash verifier</h3>
                 <p>Calculate and verify file checksums using MD5, SHA-1, SHA-256, and SHA-512. Verify file integrity and detect tampering with cryptographic hash functions.</p>
                 <div class="technologies">
                     <strong>Technologies:</strong> Python, hashlib, Cryptography, Flask
                 </div>
-                <a href="/hash-verifier" class="btn btn-small">Try Hash Verifier</a>
+                <a href="/hash-verifier" class="btn btn-small">Verify a hash</a>
             </div>
         </div>
     </div>
-    
-    {% else %}
-    <p>No projects found. Add some projects to your database!</p>
-    {% endif %}
 </div>
 {% endblock %}

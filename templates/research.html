@@ -1,0 +1,598 @@
+{% extends "base.html" %}
+
+{% block title %}Research - Bryan Petrie{% endblock %}
+
+{% block content %}
+<div class="research-page">
+    <p class="eyebrow">nsf reu &middot; summer 2026</p>
+    <h1>Research</h1>
+    <p class="page-sub">Nine weeks at the University of Nebraska Omaha's ASTAR Lab under Dr.&nbsp;Peng Jiang, breaking cross-view geo-localization models for the IARPA WRIVA challenge.</p>
+
+    <div class="rp-meta">
+        <span><b>lab</b> &nbsp;UNO ASTAR</span>
+        <span><b>program</b> &nbsp;IARPA WRIVA</span>
+        <span><b>hardware</b> &nbsp;RTX 5090</span>
+        <span><b>branch</b> &nbsp;bryan/attack</span>
+    </div>
+
+    <!-- ── tab bar ─────────────────────────────────────── -->
+    <div class="research-tabs" role="tablist" aria-label="Research areas">
+        <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="overview-tab"    id="tab-overview"    onclick="showResearchTab('overview')"><span class="tab-index">00</span>Overview</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="adversarial-tab" id="tab-adversarial" onclick="showResearchTab('adversarial')"><span class="tab-index">01</span>Adversarial track</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="wriva-tab"       id="tab-wriva"       onclick="showResearchTab('wriva')"><span class="tab-index">02</span>WRIVA track</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="findings-tab"    id="tab-findings"    onclick="showResearchTab('findings')"><span class="tab-index">03</span>Findings</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="poster-tab"      id="tab-poster"      onclick="showResearchTab('poster')"><span class="tab-index">04</span>Poster</button>
+    </div>
+
+    <!-- ══ 00 · OVERVIEW ═══════════════════════════════ -->
+    <div id="overview-tab" class="tab-content active" role="tabpanel" aria-labelledby="tab-overview">
+
+        <div class="track-head">
+            <h2>The <span class="it">problem</span></h2>
+        </div>
+        <p class="section-lead">Cross-view geo-localization models answer one question: given a photo taken on the ground, where on the map was it taken? They embed the ground image and a library of satellite tiles into a shared space, then retrieve the nearest tile. IARPA's WRIVA program cares how much you can trust that answer &mdash; so my work is the adversarial half: perturbations small enough to be invisible, strong enough to send the retrieval somewhere else entirely.</p>
+
+        <div class="rp-stats">
+            <div class="rp-stat">
+                <span class="n">78.2<small>%</small></span>
+                <span class="l">flip rate</span>
+                <span class="s">469 of 600 images</span>
+            </div>
+            <div class="rp-stat">
+                <span class="n">24<small> dB</small></span>
+                <span class="l">psnr</span>
+                <span class="s">SSIM 0.96</span>
+            </div>
+            <div class="rp-stat">
+                <span class="n">16<small>/255</small></span>
+                <span class="l">epsilon</span>
+                <span class="s">L&infin; budget</span>
+            </div>
+            <div class="rp-stat">
+                <span class="n">3<small>&times;</small></span>
+                <span class="l">improvement</span>
+                <span class="s">over V6b baseline</span>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">Pipeline <span class="it">progression</span></h2>
+            <p class="section-lead">Six versions across the summer, each one measured on the same 600-image evaluation set. The jump at V9 is the normalization fix; the jump at V10 is retargeting; V11 integrates the retry pass into a single two-stage run.</p>
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>overall flip rate by version &middot; WRIVA-CVGL-DEV</caption>
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Key changes</th>
+                            <th class="num">Overall</th>
+                            <th class="num">DEV-001</th>
+                            <th class="num">DEV-002</th>
+                            <th class="num">DEV-003</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>V6b</td><td>Basic PGD + Tolias loss</td><td class="num">26.2%</td><td class="num">60.2%</td><td class="num">10.5%</td><td class="num">8.0%</td></tr>
+                        <tr><td>V9</td><td>Best chip cache + momentum</td><td class="num">39.7%</td><td class="num">72.0%</td><td class="num">31.5%</td><td class="num">15.5%</td></tr>
+                        <tr><td>V10</td><td>Hierarchical + retargeting + 200 iters</td><td class="num">62.2%</td><td class="num">77.0%</td><td class="num">44.5%</td><td class="num">65.0%</td></tr>
+                        <tr><td>V10 retry</td><td>Top-5 chips + 300 iters on failures</td><td class="num">76.7%</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+                        <tr class="total"><td>V11</td><td>Two-stage integrated pipeline</td><td class="num hi">78.2%</td><td class="num hi">91.5%</td><td class="num hi">61.0%</td><td class="num hi">82.0%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <p class="eyebrow">source</p>
+            <h2 class="section-title">Codebase</h2>
+            <p class="section-lead">Both attack pipelines, the chip caches, and the analysis outputs live in one repository on the lab server. The WRIVA attack script is published here in full.</p>
+            <div class="code-panel">
+                <div class="code-head">
+                    <span class="code-dots"><i></i><i></i><i></i></span>
+                    <span class="code-file">WRIVA_Challenge/attacks/</span>
+                    <span class="code-meta">repository layout</span>
+                </div>
+<pre class="rp-tree">attacks/
+&#9500;&#9472;&#9472; <b>v11_twostage.py</b>            <i># Sample4Geo two-stage pipeline</i>
+&#9500;&#9472;&#9472; <b><a href="/code/wriva-attack">wriva_attack.py</a></b>            <i># DINOv3 / FlexGeoApprox port</i>
+&#9500;&#9472;&#9472; v11_twostage/
+&#9474;   &#9500;&#9472;&#9472; results.csv               <i># per-image record, 600 rows</i>
+&#9474;   &#9500;&#9472;&#9472; checkpoint.json           <i># resumable state + momentum</i>
+&#9474;   &#9492;&#9472;&#9472; npy/
+&#9474;       &#9500;&#9472;&#9472; orig_embs.npy         <i># [600, 1024] clean embeddings</i>
+&#9474;       &#9500;&#9472;&#9472; adv_embs.npy          <i># [600, 1024] adversarial</i>
+&#9474;       &#9500;&#9472;&#9472; orig_coords.npy       <i># [600, 2] t-SNE projection</i>
+&#9474;       &#9500;&#9472;&#9472; adv_coords.npy        <i># [600, 2]</i>
+&#9474;       &#9500;&#9472;&#9472; margin_shifts.npy     <i># [600] displacement</i>
+&#9474;       &#9500;&#9472;&#9472; stages.npy            <i># [600] stage 1 or 2</i>
+&#9474;       &#9500;&#9472;&#9472; phases.npy            <i># cross_site / same_site / not_flipped</i>
+&#9474;       &#9492;&#9472;&#9472; meta.json             <i># summary statistics</i>
+&#9500;&#9472;&#9472; chip_cache/                   <i># Sample4Geo satellite embeddings</i>
+&#9500;&#9472;&#9472; wriva_chip_cache/             <i># DINOv3 satellite embeddings</i>
+&#9492;&#9472;&#9472; failure_analysis/
+    &#9500;&#9472;&#9472; failure_analysis.png
+    &#9492;&#9472;&#9472; analysis_results.json</pre>
+            </div>
+            <div class="rp-source">
+                <a class="btn-code" href="/code/wriva-attack">wriva_attack.py</a>
+                <a class="btn-code" href="/code/pgd">pgd_cifar10.py</a>
+                <a class="btn-code" href="/code/fgsm">fgsm_cifar10.py</a>
+                <a class="btn-code" href="/code/geoshield">geoshield_attack.py</a>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <p class="eyebrow">before the lab</p>
+            <h2 class="section-title">Foundations</h2>
+            <p class="section-lead">Before touching the WRIVA stack I rebuilt the canonical attacks from the papers &mdash; FGSM, PGD, EOT, RP2, and GeoShield &mdash; on datasets small enough to iterate on in minutes. Every card opens the real source.</p>
+            <div class="research-grid">
+                <article class="research-card rc-model">
+                    <span class="rc-badge">model</span>
+                    <h3>CIFAR-10 CNN</h3>
+                    <p>A CNN trained from scratch in PyTorch as the first white-box target &mdash; 3-channel natural images, 10 classes.</p>
+                    <div class="rc-spec">pytorch &middot; <b>2&times;conv + 2&times;fc</b></div>
+                    <div class="card-actions"><a class="btn-code" href="/code/cifar10-cnn">train_cifar10.py</a></div>
+                </article>
+                <article class="research-card rc-attack">
+                    <span class="rc-badge">attack</span>
+                    <h3>FGSM</h3>
+                    <p>One step along the sign of the loss gradient. The baseline every later attack gets measured against.</p>
+                    <div class="rc-spec"><b>single-step</b> &middot; sign(&nabla;loss)</div>
+                    <div class="card-actions"><a class="btn-code" href="/code/fgsm">fgsm_cifar10.py</a></div>
+                </article>
+                <article class="research-card rc-attack">
+                    <span class="rc-badge">attack</span>
+                    <h3>PGD</h3>
+                    <p>Iterative FGSM with projection back into the &epsilon;-ball at every step &mdash; the strong first-order attack the whole WRIVA pipeline is built on.</p>
+                    <div class="rc-spec"><b>iterative</b> &middot; L&infin; projection</div>
+                    <div class="card-actions"><a class="btn-code" href="/code/pgd">pgd_cifar10.py</a></div>
+                </article>
+                <article class="research-card rc-defense">
+                    <span class="rc-badge">privacy</span>
+                    <h3>GeoShield</h3>
+                    <p>Perturbs a photo until a vision-language model can no longer guess where it was taken. Ran on a local Ollama LLaVA instance after hitting hosted-API quota limits.</p>
+                    <div class="rc-spec">clip vit-b/32 &middot; <b>200-step pgd</b></div>
+                    <div class="card-actions"><a class="btn-code" href="/code/geoshield">geoshield_attack.py</a></div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ 01 · ADVERSARIAL TRACK ══════════════════════ -->
+    <div id="adversarial-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-adversarial">
+
+        <div class="track-head">
+            <p class="eyebrow">primary track</p>
+            <h2>Attacking <span class="it">Sample4Geo</span></h2>
+        </div>
+        <p class="section-lead">Sample4Geo is a ConvNeXt-Base retrieval model that hits 98.68% Recall@1 on CVUSA &mdash; a strong, well-calibrated target. The goal was a perturbation that leaves the ground image visually untouched while pushing its embedding far enough that the correct satellite tile drops out of the top of the ranking.</p>
+
+        <div class="rp-meta" style="margin-top:1.5rem">
+            <span><b>target</b> &nbsp;Sample4Geo / ConvNeXt-Base</span>
+            <span><b>dataset</b> &nbsp;WRIVA-CVGL-DEV</span>
+            <span><b>images</b> &nbsp;600 (200 &times; 3 sites)</span>
+            <span><b>epsilon</b> &nbsp;16/255</span>
+        </div>
+
+        <!-- version rail: signature element -->
+        <p class="eyebrow" style="margin-top:2.75rem">pipeline evolution</p>
+        <div class="pipeline-rail">
+            <div class="rail-step">
+                <span class="v">V6b</span>
+                <span class="what">Basic PGD + Tolias loss. 26.2% baseline.</span>
+            </div>
+            <div class="rail-step hit">
+                <span class="v">V9</span>
+                <span class="what">Normalization bug fixed. Best chip cache + momentum. 39.7%.</span>
+            </div>
+            <div class="rail-step">
+                <span class="v">V10</span>
+                <span class="what">Hierarchical warm-start, dynamic retargeting, 200 iters. 62.2%.</span>
+            </div>
+            <div class="rail-step">
+                <span class="v">V10r</span>
+                <span class="what">Top-5 chip retry pass on failures. 76.7%.</span>
+            </div>
+            <div class="rail-step hit">
+                <span class="v">V11</span>
+                <span class="what">Retry folded into one integrated two-stage run. 78.2%.</span>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">Two-stage <span class="it">architecture</span></h2>
+            <p class="section-lead">V10 needed a manual second pass over its failures. V11's contribution is folding that pass into the pipeline: every image gets a cheap single-chip attempt first, and only the ones that fail escalate to the expensive top-5 configuration. Stage 2 never touches an image Stage 1 already cleared.</p>
+
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>stage breakdown &middot; 600 images</caption>
+                    <thead>
+                        <tr><th>Stage</th><th>Config</th><th class="num">Processed</th><th class="num">Flipped</th><th class="num">Rate</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Stage 1</td><td>200 iters, best 1 chip</td><td class="num">600</td><td class="num">370</td><td class="num">61.7%</td></tr>
+                        <tr><td>Stage 2</td><td>300 iters, top-5 chip average</td><td class="num">230</td><td class="num">99</td><td class="num">43.0%</td></tr>
+                        <tr class="total"><td>Combined</td><td>&mdash;</td><td class="num">600</td><td class="num hi">469</td><td class="num hi">78.2%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="rp-key">
+                <span class="lbl">why it matters</span>
+                <p>Stage 2 converts <strong>43% of the images Stage 1 gave up on</strong>. Running the expensive configuration on all 600 would cost roughly 2.5&times; the compute for the same result &mdash; the escalation is what makes the attack practical on a shared GPU.</p>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">Per-site <span class="it">results</span></h2>
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>V11 final &middot; flip rate and stage contribution by site</caption>
+                    <thead>
+                        <tr><th>Site</th><th class="num">Stage 1</th><th class="num">Stage 2</th><th class="num">Flipped</th><th class="num">Flip rate</th><th class="num">Avg margin shift</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>DEV-001</td><td class="num">156</td><td class="num">27</td><td class="num">183 / 200</td><td class="num hi">91.5%</td><td class="num">+0.6300</td></tr>
+                        <tr><td>DEV-002</td><td class="num">88</td><td class="num">34</td><td class="num">122 / 200</td><td class="num">61.0%</td><td class="num">+0.3965</td></tr>
+                        <tr><td>DEV-003</td><td class="num">126</td><td class="num">38</td><td class="num">164 / 200</td><td class="num">82.0%</td><td class="num">+0.5347</td></tr>
+                        <tr class="total"><td>Overall</td><td class="num">370</td><td class="num">99</td><td class="num">469 / 600</td><td class="num hi">78.2%</td><td class="num">+0.5204</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>outcome phase &middot; where flipped images land</caption>
+                    <thead>
+                        <tr><th>Phase</th><th class="num">Count</th><th class="num">Avg margin shift</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cross-site flip</td><td class="num">341</td><td class="num">+0.5910</td></tr>
+                        <tr><td>Same-site flip</td><td class="num">128</td><td class="num">+0.5898</td></tr>
+                        <tr><td>Not flipped</td><td class="num">131</td><td class="num">+0.3500</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="section-lead" style="margin-top:1.25rem">Cross-site flips &mdash; where the retrieval lands at a completely different geographic site &mdash; make up 341 of the 469 successes. These are the failures that matter operationally: not a near-miss within the same neighborhood, but a confident answer pointing somewhere else.</p>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">Attack <span class="it">parameters</span></h2>
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>V11 configuration</caption>
+                    <thead>
+                        <tr><th>Parameter</th><th class="num">Stage 1</th><th class="num">Stage 2</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Iterations</td><td class="num">200</td><td class="num">300</td></tr>
+                        <tr><td>Chip selection</td><td class="num">best 1</td><td class="num">top-5 avg</td></tr>
+                        <tr><td>Restarts</td><td class="num">3</td><td class="num">3</td></tr>
+                        <tr><td>EOT transforms</td><td class="num">5</td><td class="num">5</td></tr>
+                        <tr><td>Retarget interval</td><td class="num">25 steps</td><td class="num">25 steps</td></tr>
+                        <tr><td>Momentum decay</td><td class="num">1.0</td><td class="num">1.0</td></tr>
+                        <tr><td>Push weight</td><td class="num">0.1</td><td class="num">0.1</td></tr>
+                        <tr><td>Epsilon</td><td class="num">16/255</td><td class="num">16/255</td></tr>
+                        <tr><td>Alpha</td><td class="num">4/255</td><td class="num">4/255</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="technologies" style="margin-top:1.35rem">
+                <strong>Stack:</strong> PyTorch &middot; PGD / MI-FGSM &middot; Sample4Geo (ConvNeXt-Base) &middot; EOT &middot; t-SNE &middot; conda <code>wriva</code> &middot; RTX 5090 &middot; screen-managed long jobs &middot; checkpoint every 25 images
+            </div>
+            <p class="section-lead" style="margin-top:1.25rem">The same two-stage structure is published in full as the DINOv3 port &mdash; same loss, same hierarchical targeting, same checkpointing.</p>
+            <div class="rp-source">
+                <a class="btn-code" href="/code/wriva-attack">wriva_attack.py</a>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">The <span class="it">bug</span> that mattered</h2>
+            <p class="section-lead">One line, present in every version from V1 through V8, that invalidated every image-quality number produced before V9.</p>
+
+            <div class="rp-code">
+<b>torch.clamp(adv.data, 0, 1)</b>   <i># applied to NORMALIZED tensors</i>
+<i># actual tensor range: -2.1 to +2.6</i>
+<i># every dark pixel snapped to 0 on every iteration,</i>
+<i># regardless of the epsilon budget</i></div>
+
+            <p class="section-lead" style="margin-top:1.35rem">The perturbation was being optimized in normalized space but clamped against raw <code>[0,1]</code> bounds. Dark pixels were driven to zero each iteration, which meant the effective epsilon on those regions was roughly <strong>120/255</strong> &mdash; nearly eight times the budget I thought I was enforcing. The output images carried a grey film, and PSNR sat at 4.2 dB.</p>
+
+            <div class="rp-code fixed">
+<b>clamp to the normalized valid range</b>
+<b>convert epsilon to normalized space per channel</b></div>
+
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>before and after the fix &middot; &epsilon; = 16/255</caption>
+                    <thead>
+                        <tr><th>Metric</th><th class="num">Buggy (V1&ndash;V8)</th><th class="num">Fixed (V9+)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>PSNR</td><td class="num bad">4.2 dB</td><td class="num ok">27.74 dB</td></tr>
+                        <tr><td>SSIM</td><td class="num bad">0.65</td><td class="num ok">0.9862</td></tr>
+                        <tr><td>Effective epsilon</td><td class="num bad">~120/255</td><td class="num ok">16/255</td></tr>
+                        <tr><td>Visual artifact</td><td class="num bad">grey film</td><td class="num ok">texture-concentrated</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="rp-key">
+                <span class="lbl">what it cost, what it bought</span>
+                <p>Every quantitative claim made before V9 had to be re-run. But the attack had <em>looked</em> like it was working &mdash; the artifacts themselves were destroying the embedding. Once the clamp was corrected, the attack had to succeed on gradient signal alone. <strong>Everything from V9 onward is a real result.</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ 02 · WRIVA TRACK ════════════════════════════ -->
+    <div id="wriva-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-wriva">
+
+        <div class="track-head">
+            <p class="eyebrow">program track</p>
+            <h2>Porting to <span class="it">DINOv3</span></h2>
+        </div>
+        <p class="section-lead">The second half of the summer moved the attack onto the model inside the WRIVA evaluation stack &mdash; FlexGeoApprox, built on a DINOv3 vision-transformer backbone instead of Sample4Geo's convolutional one. Same pipeline, same epsilon, same 600 images. The result is the most interesting number of the summer.</p>
+
+        <div class="rp-scroll">
+            <table class="rp-table">
+                <caption>V11 pipeline &middot; ConvNeXt vs. DINOv3 target</caption>
+                <thead>
+                    <tr><th>Site</th><th class="num">Sample4Geo</th><th class="num">WRIVA DINOv3</th><th class="num">Drop</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>DEV-001</td><td class="num">91.5%</td><td class="num">77.0%</td><td class="num">&minus;14.5 pp</td></tr>
+                    <tr><td>DEV-002</td><td class="num">61.0%</td><td class="num">14.0%</td><td class="num bad">&minus;47.0 pp</td></tr>
+                    <tr><td>DEV-003</td><td class="num">82.0%</td><td class="num">53.0%</td><td class="num">&minus;29.0 pp</td></tr>
+                    <tr class="total"><td>Overall</td><td class="num">78.2%</td><td class="num hi">48.0%</td><td class="num bad">&minus;30.2 pp</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="rp-key">
+            <span class="lbl">the diagnostic that settles it</span>
+            <p>Stage 2 recovered <strong>99 of 230</strong> Stage 1 failures on Sample4Geo &mdash; but only <strong>2 of 314</strong> on WRIVA. If the DINOv3 failures were a budget problem, escalating to 300 iterations and top-5 chip averaging would have converted a comparable share. It converted 0.6%. These images are not underattacked; the transformer's representation is genuinely harder to displace.</p>
+        </div>
+
+        <div class="rp-cols">
+            <article class="research-card rc-model">
+                <span class="rc-badge">target</span>
+                <h3>FlexGeoApprox</h3>
+                <p>The WRIVA-side geo-localization model, backed by a DINOv3 ViT encoder. Patch tokens aggregated through attention rather than local receptive fields.</p>
+                <div class="rc-spec">backbone: <b>DINOv3 ViT</b></div>
+            </article>
+            <article class="research-card rc-attack">
+                <span class="rc-badge">port</span>
+                <h3>Pipeline adaptation</h3>
+                <p>The V11 two-stage core carried over unchanged. New preprocessing path, new per-channel normalization constants, and a fully regenerated chip cache &mdash; cached embeddings are model-specific.</p>
+                <div class="rc-spec">reused: <b>stage 1 / stage 2 core</b></div>
+            </article>
+            <article class="research-card rc-defense">
+                <span class="rc-badge">finding</span>
+                <h3>Architecture matters</h3>
+                <p>A 30-point drop from the same attack at the same epsilon. Transformer backbones are meaningfully more robust to L&infin; embedding attacks than ConvNeXt on this task.</p>
+                <div class="rc-spec">78.2% &rarr; <b>48.0%</b></div>
+            </article>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">Why the port was <span class="it">hard</span></h2>
+            <ol class="findings">
+                <li>
+                    <b>Normalization is not portable</b>
+                    <span>Having been burned once by a clamp-space mismatch, every preprocessing constant on the new target got verified against the model's own transform pipeline before a single attack ran.</span>
+                </li>
+                <li>
+                    <b>Patch tokens vs. convolutional features</b>
+                    <span>A ViT aggregates patch tokens through attention rather than local receptive fields, so perturbation energy shaped against a CNN does not land where it needs to. DEV-002 falling from 61% to 14% is that mismatch at its worst.</span>
+                </li>
+                <li>
+                    <b>The chip cache has to be rebuilt</b>
+                    <span>Cached target embeddings are model-specific. The entire top-K cache regenerates against the new encoder before retargeting works at all.</span>
+                </li>
+            </ol>
+            <div class="technologies" style="margin-top:1.35rem">
+                <strong>Stack:</strong> PyTorch &middot; DINOv3 / FlexGeoApprox &middot; WRIVA evaluation harness &middot; regenerated chip cache &middot; shared GPU server
+            </div>
+            <div class="rp-source">
+                <a class="btn-code" href="/code/wriva-attack">wriva_attack.py</a>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">Reading the <span class="it">source</span></h2>
+            <p class="section-lead">The full attack script is on this site &mdash; roughly 400 lines covering model loading, the chip cache, momentum PGD under EOT, the hierarchical targeting fallback, and checkpointed resume across both stages. A few things worth looking at:</p>
+            <ol class="findings">
+                <li>
+                    <b><code>run_pgd()</code> &mdash; the normalization fix in practice</b>
+                    <span>Epsilon and alpha are converted to normalized space per channel (<code>EPS_NORM = EPSILON / STD</code>), and the final clamp targets <code>NORM_MIN</code>/<code>NORM_MAX</code> rather than <code>[0,1]</code>. This is the corrected form of the bug that invalidated V1&ndash;V8.</span>
+                </li>
+                <li>
+                    <b><code>hierarchical_attack()</code> &mdash; cross-site first, same-site as fallback</b>
+                    <span>Every image gets attacked toward a different site first. Only if that fails does it retry toward the same site, which is why cross-site flips dominate the results. The margin sign decides which phase gets recorded.</span>
+                </li>
+                <li>
+                    <b>Momentum carried across stages</b>
+                    <span>Stage 1's accumulated momentum tensor is checkpointed to disk and replayed as the warm start for Stage 2, so escalation resumes from where the cheap attempt gave up instead of restarting cold.</span>
+                </li>
+                <li>
+                    <b>The loss is a push&ndash;pull</b>
+                    <span>Negative cosine similarity to the wrong target, plus a <code>0.1</code>-weighted positive term on the correct one &mdash; the perturbation is simultaneously pulled toward the decoy and pushed off the truth.</span>
+                </li>
+                <li>
+                    <b>DINOv3 needs 224, not 384</b>
+                    <span>One of the porting details that has to be right before anything else works. The dummy-tensor helpers exist because the model's forward pass requires both branches even when only one embedding is wanted.</span>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- ══ 03 · FINDINGS ═══════════════════════════════ -->
+    <div id="findings-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-findings">
+
+        <div class="track-head">
+            <p class="eyebrow">analysis</p>
+            <h2>What resistance <span class="it">actually is</span></h2>
+        </div>
+        <p class="section-lead">Two experiments came out of asking why 131 images would not flip. Both point the same direction: vulnerability is a property of how the model encodes a place, not of what the photograph looks like.</p>
+
+        <div class="section-block">
+            <h2 class="section-title">Vulnerability is a <span class="it">source-site</span> property</h2>
+            <p class="section-lead">If a site's flip rate came from the source&ndash;target pairing, changing the target should change the rate. It doesn't.</p>
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>cross-target experiment &middot; same source, different satellite target</caption>
+                    <thead>
+                        <tr><th>Source</th><th>Original target</th><th class="num">Flip %</th><th>New target</th><th class="num">Flip %</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>DEV-001</td><td>DEV-003 sat</td><td class="num">60.2%</td><td>DEV-002 sat</td><td class="num hi">59.5%</td></tr>
+                        <tr><td>DEV-002</td><td>DEV-003 sat</td><td class="num">10.5%</td><td>DEV-001 sat</td><td class="num">2.5%</td></tr>
+                        <tr><td>DEV-003</td><td>DEV-001 sat</td><td class="num">8.0%</td><td>DEV-002 sat</td><td class="num">13.0%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="rp-key">
+                <span class="lbl">finding</span>
+                <p>DEV-001 flips at roughly 60% <strong>regardless of what it is being pushed toward</strong>. Swap the target entirely and the rate moves by 0.7 points. Whatever makes a site attackable lives in how the model encodes the source imagery, not in the geometry between source and destination.</p>
+            </div>
+
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>site character vs. embedding strength</caption>
+                    <thead>
+                        <tr><th>Site</th><th>Visual character</th><th>Embedding</th><th class="num">V11 flip rate</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>DEV-001</td><td>Generic suburbs &mdash; flat concrete, uniform grass, standard streets</td><td>Weak, diffuse</td><td class="num hi">91.5%</td></tr>
+                        <tr><td>DEV-002</td><td>Irregular brick buildings in autumn</td><td>Strong, tight</td><td class="num">61.0%</td></tr>
+                        <tr><td>DEV-003</td><td>Irregular buildings with unusual statues</td><td>Very strong</td><td class="num">82.0%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="section-lead" style="margin-top:1.25rem">A place with no distinguishing features gives the model nothing to hold onto &mdash; the embedding is diffuse, and a small push moves it a long way. Distinctive architecture produces a tight, confident embedding that resists displacement.</p>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">Visual content does <span class="it">not</span> predict resistance</h2>
+            <p class="section-lead">The obvious hypothesis is that resistant images are visually busier &mdash; more texture, more edges, more entropy for the perturbation to hide in. Measured directly, that hypothesis fails.</p>
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>recovered vs. still-failing images</caption>
+                    <thead>
+                        <tr><th>Metric</th><th class="num">Recovered</th><th class="num">Still failing</th><th class="num">Difference</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Image entropy</td><td class="num">5.314</td><td class="num">5.282</td><td class="num">&minus;0.6%</td></tr>
+                        <tr><td>Edge density</td><td class="num">69.04</td><td class="num">70.81</td><td class="num">+2.6%</td></tr>
+                        <tr><td>Color variance</td><td class="num">67.29</td><td class="num">67.86</td><td class="num">+0.9%</td></tr>
+                        <tr><td>Max t-SNE displacement</td><td class="num">0.5166</td><td class="num">0.4936</td><td class="num">&minus;4.4%</td></tr>
+                        <tr><td>Gradient norm (DEV-002)</td><td class="num">0.000044</td><td class="num">0.000032</td><td class="num hi">&minus;27.3%</td></tr>
+                        <tr class="total"><td>Avg margin shift</td><td class="num">+0.4422</td><td class="num">+0.3537</td><td class="num hi">&minus;20.0%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="rp-key">
+                <span class="lbl">key finding</span>
+                <p>Every pixel-space measure separates the two groups by <strong>under 3%</strong>. The two measures that do separate them &mdash; gradient norm and margin shift &mdash; are both properties of the model's response, not the image. Resistance lives in the embedding representation. You cannot look at a photograph and predict whether it will survive the attack.</p>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">The 131 that <span class="it">held</span></h2>
+            <div class="rp-scroll">
+                <table class="rp-table">
+                    <caption>failure categories at &epsilon; = 16/255</caption>
+                    <thead>
+                        <tr><th>Category</th><th class="num">Count</th><th>Interpretation</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Close (shift &gt; 0.40)</td><td class="num">16</td><td>Near misses &mdash; would likely flip at &epsilon; = 20/255</td></tr>
+                        <tr><td>Mid-range (0.25&ndash;0.40)</td><td class="num">54</td><td>Weak gradients, genuinely resistant</td></tr>
+                        <tr><td>Stuck (shift &lt; 0.25)</td><td class="num">61</td><td>Hard floor at this epsilon</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="section-lead" style="margin-top:1.25rem">Across the earlier 1200-image full-dataset run, <strong>every single image showed a positive margin shift</strong> &mdash; the attack always moves the embedding in the intended direction, including on images it fails to flip. 84 of those came within &minus;0.1 of the decision boundary. Failure here is a matter of distance, not of direction.</p>
+        </div>
+    </div>
+
+    <!-- ══ 04 · POSTER ═════════════════════════════════ -->
+    <div id="poster-tab" class="tab-content" role="tabpanel" aria-labelledby="tab-poster">
+
+        <div class="track-head">
+            <p class="eyebrow">deliverable</p>
+            <h2>Research <span class="it">poster</span></h2>
+        </div>
+        <p class="section-lead">The summer's output is a conference-format poster documenting the two-stage PGD pipeline against Sample4Geo, co-authored with Kevin Vuong of the University of Notre Dame, who worked the retrieval and watermarking side of the same program.</p>
+
+        <div class="section-block">
+            <h2 class="section-title">The <span class="it">poster</span></h2>
+            <div class="rp-poster-wrap">
+                <div>
+                    <div class="rp-poster-frame">
+                        <img src="{{ url_for('static', filename='img/research/adversarial_attack_poster.jpg') }}" alt="Adversarial Attack on Cross-View Geo-Localization research poster, 24 by 36 inches, authored by Bryan Petrie and Kevin Vuong, NSF REU ASTAR Lab UNO">
+                    </div>
+                    <p class="rp-poster-cap">Adversarial Attack on Cross-View Geo-Localization &middot; Petrie &amp; Vuong &middot; NSF REU, UNO ASTAR Lab</p>
+                </div>
+                <div class="rp-poster-side">
+                    <div class="rp-figure">
+                        <img src="{{ url_for('static', filename='img/research/tsne_v11.jpg') }}" alt="t-SNE projection of clean and adversarial Sample4Geo embeddings across three panels: by site, by flip outcome, and by which stage resolved the attack">
+                        <div class="rp-figure-cap">
+                            <span class="t">figure &middot; t-SNE embedding shift</span>
+                            <p>V11 two-stage attack, &epsilon;=16/255, 469/600 flipped (78.2%) &mdash; Stage&nbsp;1: 370 &middot; Stage&nbsp;2: 99 &middot; failed: 131. Left: embeddings grouped by site. Center: flipped vs.&nbsp;not-flipped. Right: which stage resolved each flip. Lines connect each original embedding to its adversarial counterpart.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2 class="section-title">Companion <span class="it">track</span></h2>
+            <p class="section-lead">Kevin's half of the program approaches the same models from the defensive side &mdash; hardening retrieval against perturbation and embedding watermarks that survive re-encoding. The two tracks share a codebase and a GPU server, and results on one side kept redefining what counted as a success on the other.</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function showResearchTab(name) {
+    document.querySelectorAll('.research-tabs .tab-btn').forEach(function (b) {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.research-page .tab-content').forEach(function (c) {
+        c.classList.remove('active');
+    });
+
+    var btn   = document.getElementById('tab-' + name);
+    var panel = document.getElementById(name + '-tab');
+    if (btn)   { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
+    if (panel) { panel.classList.add('active'); }
+
+    if (history.replaceState) {
+        history.replaceState(null, '', '#' + name);
+    }
+}
+
+/* deep-link support: /research#wriva opens that track directly */
+(function () {
+    var h = (location.hash || '').replace('#', '');
+    if (h && document.getElementById(h + '-tab')) {
+        showResearchTab(h);
+    }
+})();
+
+/* arrow-key navigation across the tab bar */
+(function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.research-tabs .tab-btn'));
+    tabs.forEach(function (tab, i) {
+        tab.addEventListener('keydown', function (e) {
+            var next = null;
+            if (e.key === 'ArrowRight') { next = tabs[(i + 1) % tabs.length]; }
+            if (e.key === 'ArrowLeft')  { next = tabs[(i - 1 + tabs.length) % tabs.length]; }
+            if (next) { e.preventDefault(); next.focus(); next.click(); }
+        });
+    });
+})();
+</script>
+{% endblock %}

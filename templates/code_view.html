@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Bryan Petrie{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<div class="code-page">
+  <a class="code-back" href="{{ back_href }}">&larr; {{ back_label }}</a>
+  <p class="eyebrow">{{ eyebrow }}</p>
+  <h1>{{ title }}</h1>
+  <p class="page-sub">{{ description }}</p>
+
+  <div class="code-panel">
+    <div class="code-head">
+      <span class="code-dots"><i></i><i></i><i></i></span>
+      <span class="code-file">{{ filename }}</span>
+      <span class="code-meta">{{ lang_label }} &middot; {{ lines }} lines</span>
+    </div>
+    <div class="code-body">
+      <pre><code class="language-{{ lang }}">{{ code }}</code></pre>
+    </div>
+  </div>
+
+  {% if note %}<p class="code-note">{{ note }}</p>{% endif %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(function(el){ hljs.highlightElement(el); });
+</script>
+{% endblock %}

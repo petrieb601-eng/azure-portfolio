@@ -4,23 +4,33 @@
 
 {% block content %}
 <div class="about-container">
-    <h1>About Me</h1>
+    <p class="eyebrow">background</p>
+    <h1>About</h1>
+
+    <div class="about-hero">
+        <figure class="about-photo">
+            <img src="{{ url_for('static', filename='img/headshot.jpg') }}" alt="Bryan Petrie">
+        </figure>
+        <div class="about-intro">
+            <p>I'm a Software Engineering and Information Technology student at William Penn University with a 3.9 GPA. As a dual-sport athlete in soccer and track, I've built the discipline, time management, and teamwork that carry straight into how I build software.</p>
+            <p>My work spans cybersecurity, full-stack web development, embedded systems, and AI integration &mdash; and most of it ends up as something you can actually run, like the tools and projects on this site.</p>
+            <a class="btn btn-download" href="{{ url_for('static', filename='Bryan_Petrie_Resume.pdf') }}" target="_blank" rel="noopener">Download résumé (PDF)</a>
+        </div>
+    </div>
+
     <div class="about-content">
-        <p>I'm a Software Engineering and Information Technology student at William Penn University with a 3.9 GPA. 
-           As a dual-sport athlete competing in both soccer and track, I've developed strong discipline, time management, 
-           and teamwork skills that translate directly to my work in software development.</p>
-        
+        <h2>Research</h2>
+        <p>In the summer of 2026 I took part in a 9-week NSF Research Experience for Undergraduates (REU) at the University of Nebraska Omaha's ASTAR Lab, under Dr.&nbsp;Peng Jiang, on the adversarial-attack track. I studied how adversarial attacks break cross-view geo-localization models. I implemented FGSM and PGD from scratch, trained my own MNIST and CIFAR-10 CNNs to use as white-box targets, and plotted how accuracy collapsed as the perturbation budget grew. I also built GeoShield, a privacy attack that perturbs an image through CLIP gradients so a vision-language model can no longer tell where a photo was taken, while leaving it visually unchanged. The code behind all of it is on my <a href="/projects">projects page</a>.</p>
+
         <h2>Experience</h2>
-        <p>Currently serving as a Lab Assistant at William Penn University, where I help students troubleshoot 
-           software and programming issues. I also have experience in the food service industry, where I developed 
-           communication skills and trained new employees.</p>
-        
+        <p>I served as a Lab Assistant at William Penn University, helping students troubleshoot software and programming issues. I also spent time in the food service industry, where I sharpened my communication skills and trained new employees.</p>
+
         <h2>Education</h2>
         <ul>
-            <li>BS in Software Engineering and Information Technology (2024-2027)</li>
+            <li>BS in Software Engineering and Information Technology (2024&ndash;2027)</li>
             <li>Minor in Business Management</li>
             <li>GPA: 3.9</li>
-            <li>Team Captain - Soccer & Track</li>
+            <li>Team Captain &mdash; Soccer &amp; Track</li>
         </ul>
 
         <h2>Contact</h2>

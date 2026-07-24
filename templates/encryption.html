@@ -4,8 +4,9 @@
 
 {% block content %}
 <div class="encryption-container">
-    <h1>🔒 File Encryption & Decryption</h1>
-    <p>Securely encrypt and decrypt your files using AES-256 encryption</p>
+    <p class="eyebrow">security / crypto</p>
+    <h1>File encryption</h1>
+    <p class="page-sub">AES-256 with PBKDF2 key derivation and a unique salt per file. Encrypt a file, keep the password, decrypt later.</p>
     
     <div class="encryption-tabs">
         <button class="tab-btn active" onclick="showTab('encrypt')">Encrypt File</button>
@@ -28,13 +29,13 @@
                 
                 <input type="password" id="encryptPassword" name="password" placeholder="Enter encryption password" required>
                 
-                <button type="submit" class="btn">🔒 Encrypt File</button>
+                <button type="submit" class="btn">Encrypt file</button>
             </form>
             
             <div id="encryptResult" class="result hidden">
                 <div class="success-message">
-                    <p>✅ File encrypted successfully!</p>
-                    <button onclick="downloadEncrypted()" class="btn btn-download">📥 Download Encrypted File</button>
+                    <p>File encrypted successfully.</p>
+                    <button onclick="downloadEncrypted()" class="btn btn-download">Download encrypted file</button>
                 </div>
             </div>
         </div>
@@ -56,13 +57,13 @@
                 
                 <input type="password" id="decryptPassword" name="password" placeholder="Enter decryption password" required>
                 
-                <button type="submit" class="btn">🔓 Decrypt File</button>
+                <button type="submit" class="btn">Decrypt file</button>
             </form>
             
             <div id="decryptResult" class="result hidden">
                 <div class="success-message">
-                    <p>✅ File decrypted successfully!</p>
-                    <button onclick="downloadDecrypted()" class="btn btn-download">📥 Download Original File</button>
+                    <p>File decrypted successfully.</p>
+                    <button onclick="downloadDecrypted()" class="btn btn-download">Download original file</button>
                 </div>
             </div>
         </div>
@@ -71,7 +72,7 @@
     <div id="error" class="error hidden"></div>
     
     <div class="info-section">
-        <h3>🛡️ Security Features</h3>
+        <h3>Security features</h3>
         <ul>
             <li><strong>AES-256 Encryption:</strong> Military-grade encryption standard</li>
             <li><strong>Password-Based:</strong> Your password generates the encryption key</li>
@@ -79,193 +80,10 @@
             <li><strong>Client-Side Processing:</strong> Files are processed securely</li>
         </ul>
         
-        <p class="warning">⚠️ <strong>Important:</strong> Keep your password safe! If you lose it, the file cannot be recovered.</p>
+        <p class="warning"><strong>Important:</strong> Keep your password safe! If you lose it, the file cannot be recovered.</p>
     </div>
 </div>
 
-<style>
-.encryption-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.encryption-container h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-.encryption-container > p {
-    text-align: center;
-    color: #7f8c8d;
-    margin-bottom: 2rem;
-}
-
-.encryption-tabs {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid #e0e0e0;
-}
-
-.tab-btn {
-    flex: 1;
-    padding: 1rem;
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    cursor: pointer;
-    font-size: 1.1rem;
-    color: #7f8c8d;
-    transition: all 0.3s;
-}
-
-.tab-btn.active {
-    color: #3498db;
-    border-bottom-color: #3498db;
-    font-weight: bold;
-}
-
-.tab-btn:hover {
-    color: #3498db;
-}
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.upload-section {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.upload-section h2 {
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-.info {
-    color: #7f8c8d;
-    margin-bottom: 2rem;
-}
-
-.file-input-wrapper {
-    margin-bottom: 1.5rem;
-}
-
-.file-label {
-    display: block;
-    padding: 2rem;
-    background: #f8f9fa;
-    border: 2px dashed #3498db;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.file-label:hover {
-    background: #e8f4f8;
-    border-color: #2980b9;
-}
-
-.file-label input[type="file"] {
-    display: none;
-}
-
-#encryptFileName, #decryptFileName {
-    color: #7f8c8d;
-    font-size: 1.1rem;
-}
-
-input[type="password"] {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-input[type="password"]:focus {
-    outline: none;
-    border-color: #3498db;
-}
-
-.result {
-    margin-top: 2rem;
-}
-
-.success-message {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
-    padding: 1.5rem;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.success-message p {
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-}
-
-.btn-download {
-    background: #27ae60;
-}
-
-.btn-download:hover {
-    background: #229954;
-}
-
-.hidden {
-    display: none;
-}
-
-.error {
-    background: #e74c3c;
-    color: white;
-    padding: 1rem;
-    border-radius: 5px;
-    margin-top: 1rem;
-}
-
-.info-section {
-    margin-top: 3rem;
-    background: #f8f9fa;
-    padding: 2rem;
-    border-radius: 10px;
-}
-
-.info-section h3 {
-    color: #2c3e50;
-    margin-bottom: 1rem;
-}
-
-.info-section ul {
-    margin-left: 2rem;
-    margin-bottom: 1.5rem;
-}
-
-.info-section li {
-    margin-bottom: 0.5rem;
-    color: #555;
-}
-
-.warning {
-    background: #fff3cd;
-    border-left: 4px solid #ffc107;
-    padding: 1rem;
-    color: #856404;
-    border-radius: 4px;
-}
-</style>
 
 <script>
 let encryptedFileData = null;

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow — Kanban Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== Confetti Canvas ===== -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ===== Header ===== -->
+<header class="app-header">
+    <div class="header-inner">
+        <div class="logo">
+            <h1>Task<span>Flow</span></h1>
+            <span class="tag">Kanban</span>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat">
+                <div class="stat-value" id="stat-todo">0</div>
+                <div class="stat-label">To Do</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-progress">0</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-done">0</div>
+                <div class="stat-label">Done</div>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                </svg>
+            </button>
+
+            <button class="icon-btn" id="analytics-toggle" onclick="toggleAnalytics()" title="Analytics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 20V10M12 20V4M6 20v-6"/>
+                </svg>
+            </button>
+
+            <button class="btn-new-task" onclick="openModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                New Task
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- ===== Search & Filter Bar ===== -->
+<div class="filter-bar">
+    <div class="filter-bar-inner">
+        <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="search-input" placeholder="Search tasks..." oninput="applyFilters()">
+        </div>
+        <div class="filter-group">
+            <select id="filter-priority" class="filter-select" onchange="applyFilters()">
+                <option value="">All Priorities</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+            <select id="filter-due" class="filter-select" onchange="applyFilters()">
+                <option value="">All Dates</option>
+                <option value="overdue">Overdue</option>
+                <option value="today">Due Today</option>
+                <option value="week">Due This Week</option>
+                <option value="none">No Due Date</option>
+            </select>
+            <button class="filter-clear" id="filter-clear" onclick="clearFilters()" style="display:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                Clear
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Analytics Panel ===== -->
+<div class="analytics-panel" id="analytics-panel">
+    <div class="analytics-inner">
+        <div class="analytics-header">
+            <h2>Analytics</h2>
+            <button class="modal-close" onclick="toggleAnalytics()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="analytics-grid">
+            <div class="analytics-card">
+                <div class="analytics-card-title">Completion Rate</div>
+                <div class="analytics-ring-container">
+                    <svg class="analytics-ring" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="52" fill="none" stroke-width="8" class="ring-bg"/>
+                        <circle cx="60" cy="60" r="52" fill="none" stroke-width="8" class="ring-fill" id="ring-fill"
+                                stroke-dasharray="326.73" stroke-dashoffset="326.73"
+                                stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                    </svg>
+                    <div class="ring-label" id="ring-label">0%</div>
+                </div>
+            </div>
+            <div class="analytics-card">
+                <div class="analytics-card-title">Task Breakdown</div>
+                <div class="breakdown-bars">
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">To Do</span>
+                        <div class="breakdown-bar"><div class="breakdown-bar-fill todo" id="bar-todo"></div></div>
+                        <span class="breakdown-value" id="bar-todo-val">0</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">In Progress</span>
+                        <div class="breakdown-bar"><div class="breakdown-bar-fill inprogress" id="bar-inprogress"></div></div>
+                        <span class="breakdown-value" id="bar-inprogress-val">0</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Done</span>
+                        <div class="breakdown-bar"><div class="breakdown-bar-fill done" id="bar-done"></div></div>
+                        <span class="breakdown-value" id="bar-done-val">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="analytics-card">
+                <div class="analytics-card-title">By Priority</div>
+                <div class="breakdown-bars">
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">High</span>
+                        <div class="breakdown-bar"><div class="breakdown-bar-fill high" id="bar-high"></div></div>
+                        <span class="breakdown-value" id="bar-high-val">0</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Medium</span>
+                        <div class="breakdown-bar"><div class="breakdown-bar-fill medium" id="bar-medium"></div></div>
+                        <span class="breakdown-value" id="bar-medium-val">0</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Low</span>
+                        <div class="breakdown-bar"><div class="breakdown-bar-fill low" id="bar-low"></div></div>
+                        <span class="breakdown-value" id="bar-low-val">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="analytics-card">
+                <div class="analytics-card-title">Overview</div>
+                <div class="quick-stats">
+                    <div class="quick-stat">
+                        <div class="quick-stat-value" id="qs-total">0</div>
+                        <div class="quick-stat-label">Total</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value overdue" id="qs-overdue">0</div>
+                        <div class="quick-stat-label">Overdue</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value due-soon" id="qs-due-soon">0</div>
+                        <div class="quick-stat-label">Due Soon</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value" id="qs-no-date">0</div>
+                        <div class="quick-stat-label">No Date</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Kanban Board ===== -->
+<main class="board-container">
+    <div class="board" id="board">
+        <div class="column" data-column="todo">
+            <div class="column-header">
+                <div class="column-title"><div class="column-dot"></div><h2>To Do</h2></div>
+                <span class="column-count">0</span>
+            </div>
+            <div class="column-body"></div>
+        </div>
+        <div class="column" data-column="inprogress">
+            <div class="column-header">
+                <div class="column-title"><div class="column-dot"></div><h2>In Progress</h2></div>
+                <span class="column-count">0</span>
+            </div>
+            <div class="column-body"></div>
+        </div>
+        <div class="column" data-column="done">
+            <div class="column-header">
+                <div class="column-title"><div class="column-dot"></div><h2>Done</h2></div>
+                <span class="column-count">0</span>
+            </div>
+            <div class="column-body"></div>
+        </div>
+    </div>
+</main>
+
+<!-- ===== Task Modal ===== -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modal-title">New Task</h2>
+            <button class="modal-close" onclick="closeModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="form-title">Task Title</label>
+                <input type="text" id="form-title" class="form-input" placeholder="What needs to be done?">
+            </div>
+            <div class="form-group">
+                <label for="form-description">Description</label>
+                <textarea id="form-description" class="form-textarea" placeholder="Add details, context, or notes..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="form-column">Status</label>
+                    <select id="form-column" class="form-select">
+                        <option value="todo">To Do</option>
+                        <option value="inprogress">In Progress</option>
+                        <option value="done">Done</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="form-priority">Priority</label>
+                    <select id="form-priority" class="form-select">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="form-due-date">Due Date</label>
+                <input type="date" id="form-due-date" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Subtasks</label>
+                <ul class="subtask-list" id="subtask-list"></ul>
+                <div class="subtask-add">
+                    <input type="text" id="subtask-input" placeholder="Add a subtask...">
+                    <button onclick="addModalSubtask()">Add</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" id="btn-delete" style="display:none; margin-right:auto;" onclick="confirmDelete()">Delete</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" id="btn-save" onclick="saveTask()">Save Task</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -4,8 +4,9 @@
 
 {% block content %}
 <div class="sentiment-container">
-    <h1>AI-Powered Image Analysis</h1>
-    <p>Enter an image URL below to analyze it using Azure Computer Vision AI</p>
+    <p class="eyebrow">ai / vision</p>
+    <h1>Image analysis</h1>
+    <p class="page-sub">Point Azure Computer Vision at any image URL — it captions, tags, and reads text automatically.</p>
     
     <div class="sentiment-input">
         <input type="text" id="imageUrl" placeholder="Enter image URL (e.g., https://example.com/image.jpg)">
@@ -28,23 +29,23 @@
         <h2>Analysis Results:</h2>
         
         <div class="result-section">
-            <h3>📝 Image Description</h3>
+            <h3>Image description</h3>
             <p id="caption" class="caption-text"></p>
             <p class="confidence">Confidence: <span id="captionConfidence"></span></p>
         </div>
         
         <div class="result-section">
-            <h3>🏷️ Detected Tags</h3>
+            <h3>Detected tags</h3>
             <div id="tags" class="tags-container"></div>
         </div>
         
         <div class="result-section">
-            <h3>🎯 Detected Objects</h3>
+            <h3>Detected objects</h3>
             <div id="objects" class="objects-container"></div>
         </div>
         
         <div class="result-section" id="textSection" style="display: none;">
-            <h3>📄 Text Found in Image</h3>
+            <h3>Text found in image</h3>
             <div id="text" class="text-container"></div>
         </div>
     </div>
@@ -52,121 +53,6 @@
     <div id="error" class="error hidden"></div>
 </div>
 
-<style>
-.sentiment-container {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.sentiment-input {
-    margin: 2rem 0;
-}
-
-#imageUrl {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-}
-
-.sample-images {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.sample-images button {
-    margin: 0.5rem 0.5rem 0.5rem 0;
-}
-
-#imagePreview {
-    margin: 2rem 0;
-    text-align: center;
-}
-
-#previewImg {
-    max-width: 100%;
-    max-height: 400px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.results {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-top: 2rem;
-}
-
-.result-section {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.result-section h3 {
-    color: #2c3e50;
-    margin-bottom: 1rem;
-}
-
-.caption-text {
-    font-size: 1.2rem;
-    color: #34495e;
-    font-weight: 500;
-}
-
-.confidence {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-}
-
-.tags-container, .objects-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.tag, .object {
-    background: #3498db;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-}
-
-.object {
-    background: #e74c3c;
-}
-
-.text-container {
-    background: white;
-    padding: 1rem;
-    border-left: 4px solid #3498db;
-}
-
-.text-line {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.hidden {
-    display: none;
-}
-
-.error {
-    background: #e74c3c;
-    color: white;
-    padding: 1rem;
-    border-radius: 5px;
-    margin-top: 1rem;
-}
-</style>
 
 <script>
 function useSample(url) {

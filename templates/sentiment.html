@@ -4,8 +4,9 @@
 
 {% block content %}
 <div class="sentiment-container">
-    <h1>AI-Powered Sentiment Analysis</h1>
-    <p>Enter text below to analyze its sentiment using Azure AI</p>
+    <p class="eyebrow">ai / nlp</p>
+    <h1>Sentiment analysis</h1>
+    <p class="page-sub">Paste any text and Azure Language scores it positive, neutral, or negative in real time.</p>
     
     <div class="sentiment-input">
         <textarea id="textInput" rows="6" placeholder="Enter text to analyze... (e.g., 'I love this product!' or 'This was terrible.')"></textarea>
@@ -45,84 +46,6 @@
     <div id="error" class="error hidden"></div>
 </div>
 
-<style>
-.sentiment-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.sentiment-input {
-    margin: 2rem 0;
-}
-
-#textInput {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-}
-
-.results {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-top: 2rem;
-}
-
-.hidden {
-    display: none;
-}
-
-.sentiment-label {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-#sentiment {
-    font-weight: bold;
-    color: #3498db;
-}
-
-.confidence-scores {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.score {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.progress-bar {
-    flex: 1;
-    height: 30px;
-    background: #f0f0f0;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.progress {
-    height: 100%;
-    transition: width 0.5s ease;
-}
-
-.positive .progress { background: #2ecc71; }
-.neutral .progress { background: #95a5a6; }
-.negative .progress { background: #e74c3c; }
-
-.error {
-    background: #e74c3c;
-    color: white;
-    padding: 1rem;
-    border-radius: 5px;
-    margin-top: 1rem;
-}
-</style>
 
 <script>
 async function analyzeSentiment() {

@@ -4,19 +4,19 @@
 
 {% block content %}
 <div class="sentiment-container">
-    <p class="eyebrow">ai / nlp</p>
+    <p class="eyebrow"><a href="/#tools">All tools</a></p>
     <h1>Sentiment analysis</h1>
     <p class="page-sub">Paste any text and Azure Language scores it positive, neutral, or negative in real time.</p>
     
     <div class="sentiment-input">
-        <textarea id="textInput" rows="6" placeholder="Enter text to analyze... (e.g., 'I love this product!' or 'This was terrible.')"></textarea>
-        <button onclick="analyzeSentiment()" class="btn">Analyze Sentiment</button>
+        <textarea id="textInput" rows="6" placeholder="Paste a sentence, like a product review"></textarea>
+        <button onclick="analyzeSentiment()" class="btn">Analyze sentiment</button>
     </div>
     
     <div id="results" class="results hidden">
-        <h2>Results:</h2>
+        <h2>Results</h2>
         <div class="sentiment-result">
-            <div class="sentiment-label">Overall Sentiment: <span id="sentiment"></span></div>
+            <div class="sentiment-label">Overall sentiment: <span id="sentiment"></span></div>
             <div class="confidence-scores">
                 <div class="score positive">
                     <span>Positive:</span>

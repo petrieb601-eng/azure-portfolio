@@ -4,19 +4,19 @@
 
 {% block content %}
 <div class="encryption-container">
-    <p class="eyebrow">security / crypto</p>
+    <p class="eyebrow"><a href="/#tools">All tools</a></p>
     <h1>File encryption</h1>
     <p class="page-sub">AES-256 with PBKDF2 key derivation and a unique salt per file. Encrypt a file, keep the password, decrypt later.</p>
     
     <div class="encryption-tabs">
-        <button class="tab-btn active" onclick="showTab('encrypt')">Encrypt File</button>
-        <button class="tab-btn" onclick="showTab('decrypt')">Decrypt File</button>
+        <button class="tab-btn active" onclick="showTab('encrypt')">Encrypt file</button>
+        <button class="tab-btn" onclick="showTab('decrypt')">Decrypt file</button>
     </div>
     
     <!-- Encrypt Tab -->
     <div id="encrypt-tab" class="tab-content active">
         <div class="upload-section">
-            <h2>Encrypt a File</h2>
+            <h2>Encrypt a file</h2>
             <p class="info">Upload any file and protect it with a password</p>
             
             <form id="encryptForm" enctype="multipart/form-data">
@@ -44,7 +44,7 @@
     <!-- Decrypt Tab -->
     <div id="decrypt-tab" class="tab-content">
         <div class="upload-section">
-            <h2>Decrypt a File</h2>
+            <h2>Decrypt a file</h2>
             <p class="info">Upload an encrypted file and enter the password to decrypt it</p>
             
             <form id="decryptForm" enctype="multipart/form-data">
@@ -80,7 +80,7 @@
             <li><strong>Client-Side Processing:</strong> Files are processed securely</li>
         </ul>
         
-        <p class="warning"><strong>Important:</strong> Keep your password safe! If you lose it, the file cannot be recovered.</p>
+        <p class="warning"><strong>Important:</strong> Keep your password safe. If you lose it, the file cannot be recovered.</p>
     </div>
 </div>
 

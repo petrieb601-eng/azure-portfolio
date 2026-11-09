@@ -4,14 +4,14 @@
 
 {% block content %}
 <div class="chatbot-container">
-    <p class="eyebrow">ai / rag</p>
+    <p class="eyebrow"><a href="/#tools">All tools</a></p>
     <h1>Ask me anything</h1>
     <p class="page-sub">Retrieval-augmented generation over a curated knowledge base — ask about my experience, skills, or projects.</p>
     
     <div class="chat-box">
         <div id="chatMessages" class="chat-messages">
             <div class="message bot-message">
-                <strong>AI Assistant:</strong> Hi! I'm an AI assistant with knowledge about Bryan Petrie. Ask me anything about his education, skills, projects, or experience!
+                <strong>Assistant</strong><br> I answer questions about Bryan Petrie from a curated knowledge base. Ask about his education, skills, projects or experience.
             </div>
         </div>
         
@@ -22,10 +22,10 @@
         
         <div class="sample-questions">
             <p><strong>Try asking:</strong></p>
-            <button onclick="askSample('What programming languages does Bryan know?')" class="btn btn-small">Programming Languages</button>
-            <button onclick="askSample('Tell me about Bryan\\'s education')" class="btn btn-small">Education</button>
-            <button onclick="askSample('What AI projects has Bryan built?')" class="btn btn-small">AI Projects</button>
-            <button onclick="askSample('What is Bryan\\'s GPA?')" class="btn btn-small">GPA</button>
+            <button onclick="askSample('What programming languages does Bryan know?')" class="btn btn-small btn-secondary">Programming languages</button>
+            <button onclick="askSample('Tell me about Bryan\\'s education')" class="btn btn-small btn-secondary">Education</button>
+            <button onclick="askSample('What AI projects has Bryan built?')" class="btn btn-small btn-secondary">AI projects</button>
+            <button onclick="askSample('What is Bryan\\'s GPA?')" class="btn btn-small btn-secondary">GPA</button>
         </div>
     </div>
 </div>
@@ -87,7 +87,7 @@ function addMessage(text, type) {
         messageDiv.innerHTML = '<strong>You:</strong> ' + text;
     } else if (type === 'bot') {
         messageDiv.className = 'message bot-message';
-        messageDiv.innerHTML = '<strong>AI Assistant:</strong> ' + text;
+        messageDiv.innerHTML = '<strong>Assistant</strong><br> ' + text;
     } else if (type === 'error') {
         messageDiv.className = 'error-message';
         messageDiv.textContent = text;

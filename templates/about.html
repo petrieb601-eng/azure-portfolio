@@ -4,38 +4,86 @@
 
 {% block content %}
 <div class="about-container">
-    <p class="eyebrow">background</p>
-    <h1>About</h1>
 
-    <div class="about-hero">
-        <figure class="about-photo">
-            <img src="{{ url_for('static', filename='img/headshot.jpg') }}" alt="Bryan Petrie">
-        </figure>
-        <div class="about-intro">
-            <p>I'm a Software Engineering and Information Technology student at William Penn University with a 3.9 GPA. As a dual-sport athlete in soccer and track, I've built the discipline, time management, and teamwork that carry straight into how I build software.</p>
-            <p>My work spans cybersecurity, full-stack web development, embedded systems, and AI integration &mdash; and most of it ends up as something you can actually run, like the tools and projects on this site.</p>
-            <a class="btn btn-download" href="{{ url_for('static', filename='Bryan_Petrie_Resume.pdf') }}" target="_blank" rel="noopener">Download résumé (PDF)</a>
+    <div class="convo">
+        <div class="convo-intro">
+            <h1>Hi, I'm Bryan. Ask me what you'd ask in an interview</h1>
+            <p>Software engineering student at William Penn University, working on security, full-stack apps and adversarial machine learning.</p>
+            <div class="asks">
+                <h2>Questions people ask me</h2>
+                <ul>
+                    <li><button class="ask" type="button" data-q="research" aria-pressed="true">What are you working on?</button></li>
+                    <li><button class="ask" type="button" data-q="tools" aria-pressed="false">What can I try on this site?</button></li>
+                    <li><button class="ask" type="button" data-q="stack" aria-pressed="false">What do you build with?</button></li>
+                    <li><button class="ask" type="button" data-q="school" aria-pressed="false">Where do you study?</button></li>
+                    <li><button class="ask" type="button" data-q="contact" aria-pressed="false">How do I reach you?</button></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="thread" id="thread" aria-live="polite">
+            <div class="q">What are you working on?</div>
+            <div class="a"><img src="{{ url_for('static', filename='img/headshot.jpg') }}" alt=""><div class="body">
+                <p>Most recently, breaking a geo-localization model. It looks at a street photo and finds where it was taken by matching it against satellite tiles.</p>
+                <p>At UNO's ASTAR Lab I built perturbations too small to see that sent <strong>469 of 600 photos</strong> to the wrong place. The full write-up is on the <a href="/research">research page</a>.</p>
+            </div></div>
+            <p class="note">These answers are written by me. For anything I didn't cover, <a href="/chatbot">ask the résumé chatbot</a>.</p>
         </div>
     </div>
 
-    <div class="about-content">
-        <h2>Research</h2>
-        <p>In the summer of 2026 I took part in a 9-week NSF Research Experience for Undergraduates (REU) at the University of Nebraska Omaha's ASTAR Lab, under Dr.&nbsp;Peng Jiang, on the adversarial-attack track. I studied how adversarial attacks break cross-view geo-localization models. I implemented FGSM and PGD from scratch, trained my own MNIST and CIFAR-10 CNNs to use as white-box targets, and plotted how accuracy collapsed as the perturbation budget grew. I also built GeoShield, a privacy attack that perturbs an image through CLIP gradients so a vision-language model can no longer tell where a photo was taken, while leaving it visually unchanged. The code behind all of it is on my <a href="/projects">projects page</a>.</p>
+    <svg class="contours" viewBox="0 0 1200 56" preserveAspectRatio="none" aria-hidden="true" style="margin-top:96px"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M0 44 Q150 20 300 38 T600 34 T900 30 T1200 38"/><path d="M0 32 Q150 8 300 26 T600 22 T900 18 T1200 26"/><path d="M0 20 Q150 -4 300 14 T600 10 T900 6 T1200 14"/></g></svg>
 
-        <h2>Experience</h2>
-        <p>I served as a Lab Assistant at William Penn University, helping students troubleshoot software and programming issues. I also spent time in the food service industry, where I sharpened my communication skills and trained new employees.</p>
-
-        <h2>Education</h2>
-        <ul>
-            <li>BS in Software Engineering and Information Technology (2024&ndash;2027)</li>
-            <li>Minor in Business Management</li>
-            <li>GPA: 3.9</li>
-            <li>Team Captain &mdash; Soccer &amp; Track</li>
-        </ul>
-
-        <h2>Contact</h2>
-        <p>Email: <a href="mailto:Petrieb601@gmail.com">Petrieb601@gmail.com</a></p>
-        <p>Phone: 319-930-6072</p>
-    </div>
+    <section class="section" style="padding-top:64px">
+        <h2>About me</h2>
+        <div class="bio">
+            <img src="{{ url_for('static', filename='img/headshot.jpg') }}" alt="Bryan Petrie">
+            <div>
+                <p>I'm a Software Engineering and Information Technology student at William Penn University with a 3.9 GPA. As a dual-sport athlete in soccer and track, I've built the discipline, time management and teamwork that carry straight into how I build software.</p>
+                <p>My work spans cybersecurity, full-stack web development, embedded systems and AI integration, and most of it ends up as something you can run, like the <a href="/#tools">tools on this site</a>.</p>
+                <p>In summer 2026 I joined a 9-week NSF Research Experience for Undergraduates at the University of Nebraska Omaha's ASTAR Lab, under Dr.&nbsp;Peng Jiang, on the adversarial-attack track. I implemented FGSM and PGD from scratch, trained my own MNIST and CIFAR-10 models as white-box targets, and built GeoShield, a privacy attack that stops a vision-language model from telling where a photo was taken. The code is on my <a href="/projects">projects page</a>.</p>
+                <p>I've also worked as a Lab Assistant at William Penn, helping students troubleshoot software and programming problems, and in food service, where I trained new employees.</p>
+                <p style="margin-top:28px"><a class="btn btn-quiet" href="{{ url_for('static', filename='Bryan_Petrie_Resume.pdf') }}" target="_blank" rel="noopener" style="text-decoration:none">Download résumé (PDF)</a></p>
+            </div>
+            <dl class="ledger">
+                <dt>Degree</dt><dd>BS Software Engineering and Information Technology, 2024 to 2027</dd>
+                <dt>Minor</dt><dd>Business Management</dd>
+                <dt>GPA</dt><dd>3.9</dd>
+                <dt>Athletics</dt><dd>Team captain, soccer and track</dd>
+                <dt>Research</dt><dd>NSF REU, UNO ASTAR Lab, 2026</dd>
+                <dt>Email</dt><dd><a href="mailto:Petrieb601@gmail.com">Petrieb601@gmail.com</a></dd>
+                <dt>Phone</dt><dd>319-930-6072</dd>
+            </dl>
+        </div>
+    </section>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  var avatar="{{ url_for('static', filename='img/headshot.jpg') }}";
+  var thread=document.getElementById('thread'),note=thread.querySelector('.note'),busy=false;
+  var answers={
+    research:{q:'What are you working on?',a:thread.querySelector('.a .body').innerHTML},
+    tools:{q:'What can I try on this site?',a:'<p>Six working demos, all deployed on Azure:</p><ul><li><a href="/sentiment">Sentiment analysis</a>, <a href="/image-analysis">image analysis</a> and a <a href="/chatbot">résumé chatbot</a></li><li><a href="/encryption">File encryption</a>, a <a href="/password-checker">password analyzer</a> and a <a href="/hash-verifier">hash verifier</a></li></ul><p>Pick one and try to break it.</p>'},
+    stack:{q:'What do you build with?',a:'<p>Python and Flask for most backends, Java, SQL and PowerShell from coursework and lab work, and React with Node and Express for BiteRight.</p><p>For research I use PyTorch. This site deploys to Azure App Service through GitHub Actions.</p>'},
+    school:{q:'Where do you study?',a:'<p>William Penn University: a BS in Software Engineering and Information Technology with a minor in Business Management, 2024 to 2027, with a <strong>3.9 GPA</strong>.</p><p>I also captain the soccer and track teams.</p>'},
+    contact:{q:'How do I reach you?',a:'<p>Email me at <a href="mailto:Petrieb601@gmail.com">Petrieb601@gmail.com</a> or call 319-930-6072. My résumé is in the menu at the top of the page.</p>'}
+  };
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.ask').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      if(busy)return;busy=true;
+      document.querySelectorAll('.ask').forEach(function(b){b.setAttribute('aria-pressed',b===btn?'true':'false')});
+      var item=answers[btn.dataset.q];
+      Array.prototype.slice.call(thread.children).forEach(function(c){if(c!==note)c.remove()});
+      var q=document.createElement('div');q.className='q enter';q.textContent=item.q;thread.insertBefore(q,note);
+      var a=document.createElement('div');a.className='a enter';
+      a.innerHTML='<img src="'+avatar+'" alt=""><div class="body"><span class="typing" aria-label="Typing"><i></i><i></i><i></i></span></div>';
+      setTimeout(function(){thread.insertBefore(a,note)},reduce?0:220);
+      setTimeout(function(){a.querySelector('.body').innerHTML=item.a;busy=false},reduce?0:900);
+    });
+  });
+})();
+</script>
 {% endblock %}

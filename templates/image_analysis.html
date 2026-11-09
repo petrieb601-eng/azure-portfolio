@@ -4,29 +4,29 @@
 
 {% block content %}
 <div class="sentiment-container">
-    <p class="eyebrow">ai / vision</p>
+    <p class="eyebrow"><a href="/#tools">All tools</a></p>
     <h1>Image analysis</h1>
     <p class="page-sub">Point Azure Computer Vision at any image URL — it captions, tags, and reads text automatically.</p>
     
     <div class="sentiment-input">
         <input type="text" id="imageUrl" placeholder="Enter image URL (e.g., https://example.com/image.jpg)">
-        <button onclick="analyzeImage()" class="btn">Analyze Image</button>
+        <button onclick="analyzeImage()" class="btn">Analyze image</button>
         
         <div class="sample-images">
             <p><strong>Try these sample images:</strong></p>
-            <button onclick="useSample('https://images.unsplash.com/photo-1551963831-b3b1ca40c98e')" class="btn btn-small">Breakfast</button>
-            <button onclick="useSample('https://images.unsplash.com/photo-1534438327276-14e5300c3a48')" class="btn btn-small">Gym</button>
-            <button onclick="useSample('https://images.unsplash.com/photo-1579952363873-27f3bade9f55')" class="btn btn-small">Desert</button>
+            <button onclick="useSample('https://images.unsplash.com/photo-1551963831-b3b1ca40c98e')" class="btn btn-small btn-secondary">Breakfast</button>
+            <button onclick="useSample('https://images.unsplash.com/photo-1534438327276-14e5300c3a48')" class="btn btn-small btn-secondary">Gym</button>
+            <button onclick="useSample('https://images.unsplash.com/photo-1579952363873-27f3bade9f55')" class="btn btn-small btn-secondary">Desert</button>
         </div>
     </div>
     
     <div id="imagePreview" class="hidden">
-        <h3>Image Preview:</h3>
+        <h3>Image preview</h3>
         <img id="previewImg" src="" alt="Preview">
     </div>
     
     <div id="results" class="results hidden">
-        <h2>Analysis Results:</h2>
+        <h2>Analysis results</h2>
         
         <div class="result-section">
             <h3>Image description</h3>

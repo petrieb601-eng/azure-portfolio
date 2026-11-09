@@ -3,28 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Bryan Petrie — Software Engineer{% endblock %}</title>
+    <title>{% block title %}Bryan Petrie{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Fraunces:opsz,wght@9..144,300..900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..700;1,62..125,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="scroll-rail" aria-hidden="true">
-        <div class="scroll-rail-fill"><span class="scroll-rail-head"></span></div>
-    </div>
-    <nav class="site-nav">
-        <div class="nav-container">
-            <a href="/" class="brand"><span class="brand-mark"></span>BRYAN PETRIE</a>
+    <header class="site-nav">
+        <nav class="nav-container" aria-label="Main">
+            <a href="/" class="brand">Bryan Petrie</a>
             <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/projects">Projects</a></li>
                 <li><a href="/research">Research</a></li>
+                <li><a href="/projects">Projects</a></li>
+                <li><a href="/#tools">Tools</a></li>
                 <li><a href="/about">About</a></li>
-                <li><a href="{{ url_for('static', filename='Bryan_Petrie_Resume.pdf') }}" target="_blank" rel="noopener">Resume</a></li>
+                <li><a href="{{ url_for('static', filename='Bryan_Petrie_Resume.pdf') }}" target="_blank" rel="noopener">Résumé</a></li>
             </ul>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <main>
         {% block content %}{% endblock %}
@@ -33,58 +30,22 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <span>&copy; 2026 Bryan Petrie</span>
-            <span>flask &middot; python &middot; azure app service &middot; github actions</span>
+            <span><a href="mailto:Petrieb601@gmail.com">Petrieb601@gmail.com</a> &nbsp; <a href="https://github.com/petrieb601-eng" target="_blank" rel="noopener">GitHub</a></span>
+            <span>Built with Flask on Azure App Service</span>
         </div>
     </footer>
 
     <script>
-    /* Signature element: render a real SHA-256 digest of the current page
-       into any .hash-rule divider, via the Web Crypto API. */
+    /* Mark the current page in the nav */
     (function () {
-        var els = document.querySelectorAll('.hash-rule');
-        if (!els.length) return;
-        var fallback = '8f4e2a9c1b7d3e5f6a0c8b2d4e9f1a3c5b7d9e0f2a4c6b8d1e3f5a7c9b0d2e4f';
-        function render(hex) {
-            var pairs = hex.match(/.{2}/g) || [];
-            var html = pairs.map(function (p, i) {
-                return i % 7 === 0 ? '<b>' + p + '</b>' : p;
-            }).join(' ');
-            els.forEach(function (el) { el.innerHTML = html; });
-        }
-        if (window.crypto && window.crypto.subtle && window.TextEncoder) {
-            crypto.subtle.digest('SHA-256', new TextEncoder().encode('bryan petrie :: ' + location.pathname))
-                .then(function (buf) {
-                    render(Array.prototype.map.call(new Uint8Array(buf), function (b) {
-                        return ('0' + b.toString(16)).slice(-2);
-                    }).join(''));
-                })
-                .catch(function () { render(fallback); });
-        } else {
-            render(fallback);
-        }
+        var path = location.pathname;
+        document.querySelectorAll('.nav-links a').forEach(function (a) {
+            var href = a.getAttribute('href');
+            if (href.charAt(0) !== '/' || href.indexOf('#') !== -1) return;
+            if (href === path || (href !== '/' && path.indexOf(href) === 0)) a.setAttribute('aria-current', 'page');
+        });
     })();
     </script>
-
-    <script>
-    /* Scroll-progress rail: amber fill grows downward with the page. */
-    (function () {
-        var fill = document.querySelector('.scroll-rail-fill');
-        if (!fill) return;
-        var ticking = false;
-        function update() {
-            var d = document.documentElement;
-            var max = d.scrollHeight - d.clientHeight;
-            var pct = max > 0 ? (d.scrollTop || document.body.scrollTop) / max : 0;
-            fill.style.height = (pct * 100) + 'vh';
-            ticking = false;
-        }
-        function onScroll() {
-            if (!ticking) { ticking = true; requestAnimationFrame(update); }
-        }
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', onScroll, { passive: true });
-        update();
-    })();
-    </script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

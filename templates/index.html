@@ -1,122 +1,196 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero">
-    <p class="hero-kicker"><span class="k-line"></span>Bryan Petrie &nbsp;/&nbsp; <b>artificial intelligence</b> &middot; security &middot; cloud</p>
+<div class="hero solo">
+    <h1>Bryan Petrie's Professional Portfolio</h1>
+    <p class="lede">I'm a Software Engineering and Information Technology student at William Penn University, and in summer 2026 I did undergraduate research at the University of Nebraska Omaha. This site collects my projects, my research and the tools I've built and deployed on Azure.</p>
+    <div class="actions">
+        <a class="btn" href="/projects">See my projects</a>
+        <a class="btn btn-quiet" href="/about">About me</a>
+    </div>
+</div>
 
-    <h1>
-        <span class="line"><span>Don't read my résumé.</span></span>
-        <span class="line"><span class="accent">Try it!</span></span>
-    </h1>
+<svg class="contours" viewBox="0 0 1200 56" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M0 44 Q150 20 300 38 T600 34 T900 30 T1200 38"/><path d="M0 32 Q150 8 300 26 T600 22 T900 18 T1200 26"/><path d="M0 20 Q150 -4 300 14 T600 10 T900 6 T1200 14"/></g></svg>
 
-    <div class="hero-meta">
-        <div>
-            <p class="hero-sub">Every tool on this site is a <b>working demo</b> I built and deployed — Azure AI, AES-256 encryption, retrieval-augmented chat over my own knowledge base. Open one and try to break it.</p>
-            <div class="hero-buttons">
-                <a href="#tools" class="btn">Run the tools</a>
-                <a href="/projects" class="btn btn-secondary">See the work</a>
+<section class="section" id="research" style="padding-top:64px">
+    <h2>Making a geo-localization model lose its place</h2>
+    <p class="intro">Cross-view geo-localization matches a ground photo against satellite tiles to say where it was taken. Working on the IARPA WRIVA program under Dr. Peng Jiang, I attacked Sample4Geo, a model that scores <strong>98.68% Recall@1</strong> on CVUSA, with perturbations too small to see.</p>
+
+    <div class="demo">
+        <figure class="instrument" aria-label="Interactive illustration of the adversarial attack">
+            <div class="inst-top">
+                <svg class="map" viewBox="0 0 520 400" role="img" aria-labelledby="mapTitle">
+                    <title id="mapTitle">Map with three sites. The model's guess moves from the true site to another as the perturbation grows.</title>
+                    <rect width="520" height="400" fill="#f7f9f4"/>
+                    <g fill="none" stroke="#b8c4b3" stroke-width="1.2">
+                        <path class="c" d="M40 90c40-50 140-60 190-20s40 110-30 130-170-10-160-110z"/>
+                        <path class="c" d="M70 100c30-30 100-36 132-8s20 72-28 84-118-6-104-76z"/>
+                        <path class="c" d="M300 250c50-60 170-50 190 10s-40 120-110 110-120-60-80-120z"/>
+                        <path class="c" d="M330 262c34-36 112-30 126 8s-26 78-74 72-80-40-52-80z"/>
+                        <path d="M362 274c18-18 62-14 70 6s-16 42-40 38-44-22-30-44z"/>
+                        <path d="M104 112c18-14 56-16 72 0s6 40-18 46-66-6-54-46z"/>
+                    </g>
+                    <path d="M0 320c80-30 140 10 210-20s120-90 200-80 110-30 110-30" fill="none" stroke="#4f7fa8" stroke-width="5" stroke-linecap="round" opacity=".55"/>
+                    <g stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"><path d="M0 200h520M250 0v400M250 200l200-170"/></g>
+                    <g stroke="#d4dbd0" stroke-width="1" fill="none"><path d="M0 200h520M250 0v400M250 200l200-170"/></g>
+                    <g font-family="Archivo, sans-serif" font-size="13" fill="#4a5a53" font-style="italic">
+                        <text x="40" y="150">Site one</text>
+                        <text x="388" y="96">Site two</text>
+                        <text x="356" y="372">Site three</text>
+                    </g>
+                    <g transform="translate(140 160)">
+                        <circle r="14" fill="none" stroke="#1d2b26" stroke-width="1.5"/>
+                        <path d="M-20 0h-6M20 0h6M0-20v-6M0 20v6" stroke="#1d2b26" stroke-width="1.5"/>
+                        <text x="0" y="44" text-anchor="middle" font-family="Archivo, sans-serif" font-size="12" fill="#1d2b26">Where it was taken</text>
+                    </g>
+                    <path id="trail" d="M140 160 Q 290 210 410 300" fill="none" stroke="#b5266f" stroke-width="1.5" stroke-dasharray="4 5" opacity="0"/>
+                    <g id="guess" style="transform:translate(140px,160px)">
+                        <path d="M0 0c-9-12-14-19-14-26a14 14 0 0 1 28 0c0 7-5 14-14 26z" fill="#b5266f"/>
+                        <circle cy="-26" r="5" fill="#f7f9f4"/>
+                    </g>
+                </svg>
+                <div class="side">
+                    <div>
+                        <h3>Ground photo</h3>
+                        <svg class="photo" viewBox="0 0 120 90" aria-hidden="true">
+                            <rect width="120" height="90" fill="#cfdce4"/>
+                            <rect y="58" width="120" height="32" fill="#9aa596"/>
+                            <path d="M0 64 L120 60 L120 90 L0 90z" fill="#7d877a"/>
+                            <rect x="10" y="34" width="22" height="26" fill="#6f7d76"/><rect x="34" y="26" width="16" height="34" fill="#5d6b64"/>
+                            <rect x="78" y="38" width="30" height="22" fill="#6f7d76"/>
+                            <path d="M60 60V30M54 30h12l-2-10H56z" stroke="#4a5a53" stroke-width="2" fill="#4a5a53"/>
+                            <path d="M0 78 L120 70" stroke="#e8ece4" stroke-width="1.5" stroke-dasharray="6 5"/>
+                        </svg>
+                        <p class="cap">Looks the same at every setting</p>
+                    </div>
+                    <div>
+                        <h3>Perturbation, amplified</h3>
+                        <canvas class="noise" id="noise" width="48" height="36" aria-hidden="true"></canvas>
+                        <p class="cap">Shown 20 times stronger than real</p>
+                    </div>
+                </div>
+            </div>
+            <div class="inst-bottom">
+                <label for="eps">Perturbation strength</label>
+                <span class="eps" id="epsOut">0 / 255</span>
+                <input type="range" id="eps" min="0" max="16" step="1" value="0">
+                <p class="verdict" id="verdict" aria-live="polite">The model places the photo at <b>site one</b>, which is correct</p>
+            </div>
+        </figure>
+        <div class="demo-note">
+            <h3>Try the attack</h3>
+            <p>Drag the slider to strengthen the perturbation. The photo looks the same to you, but the model's guess moves to a different site.</p>
+            <p>This is an illustration of the idea. The measured results are below.</p>
+        </div>
+    </div>
+
+    <div class="research">
+        <div class="chart">
+            <h3>Share of photos sent to the wrong place</h3>
+            <p>Each version of the attack, measured on the same 600 photos from three sites</p>
+            <svg viewBox="0 0 560 260" role="img" aria-label="Flip rate rose from 26.2% in V6b to 78.2% in V11">
+                <g stroke="rgba(29,43,38,.10)"><path d="M40 220H560M40 170H560M40 120H560M40 70H560M40 20H560"/></g>
+                <g text-anchor="end"><text x="30" y="224">0%</text><text x="30" y="124">50%</text><text x="30" y="24">100%</text></g>
+                <path d="M80 220V167.6H180V140.6H280V95.6H380V86.6H480V83.6" fill="none" stroke="#1d2b26" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M80 220V167.6H180V140.6H280V95.6H380V86.6H480V83.6V220z" fill="rgba(29,43,38,.06)"/>
+                <g fill="#1d2b26"><circle cx="80" cy="167.6" r="3.5"/><circle cx="180" cy="140.6" r="3.5"/><circle cx="280" cy="95.6" r="3.5"/><circle cx="380" cy="86.6" r="3.5"/></g>
+                <circle cx="480" cy="83.6" r="5" fill="#b5266f"/>
+                <g text-anchor="middle">
+                    <text class="val" x="80" y="157">26.2%</text><text class="val" x="180" y="130">39.7%</text><text class="val" x="280" y="85">62.2%</text><text class="val" x="380" y="76">76.7%</text><text class="val hi" x="480" y="70">78.2%</text>
+                    <text x="80" y="244">V6b</text><text x="180" y="244">V9</text><text x="280" y="244">V10</text><text x="380" y="244">V10 retry</text><text x="480" y="244">V11</text>
+                </g>
+            </svg>
+        </div>
+        <div class="facts">
+            <div class="fact"><div class="n">3×</div><p>more photos misplaced than the first version, mostly from fixing a normalization bug and retargeting toward the hardest wrong tiles</p></div>
+            <div class="fact"><div class="n">24 dB</div><p>image quality after the attack, with SSIM at 0.96, so the photos still look untouched at a budget of 16/255</p></div>
+            <div class="fact">
+                <table class="sites">
+                    <thead><tr><th>Site</th><th class="r">Misplaced</th></tr></thead>
+                    <tbody>
+                        <tr><td>Site one<span class="bar" style="width:91.5%"></span></td><td class="r">91.5%</td></tr>
+                        <tr><td>Site two<span class="bar" style="width:61%"></span></td><td class="r">61.0%</td></tr>
+                        <tr><td>Site three<span class="bar" style="width:82%"></span></td><td class="r">82.0%</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="hero-counter">
-            <span class="num">06<span class="of"> / live</span></span>
-            <span class="cap"><a href="#tools">working tools &darr;</a></span>
-        </div>
     </div>
-
-    <div class="hero-strip">
-        <span class="strip-item"><span class="live"></span><span class="lbl">status</span> deployed on Azure</span>
-        <span class="strip-item"><span class="lbl">now</span> adversarial ML research @ UNO</span>
-        <span class="strip-item"><span class="lbl">stack</span> Python · Flask · GitHub Actions</span>
-        <span class="strip-item"><span class="lbl">links</span> <a href="https://github.com/petrieb601-eng" target="_blank" rel="noopener">GitHub</a> · <a href="mailto:Petrieb601@gmail.com">Email</a></span>
-    </div>
+    <p class="more"><a href="/research">Read the full research write-up</a></p>
 </section>
 
 <section class="section" id="tools">
-    <div class="section-head">
-        <p class="eyebrow">live demos</p>
-        <h2 class="section-title">Six tools you can <span class="it">run</span>.</h2>
-    </div>
-
-    <div class="tool-index">
-        <a class="tool-row" href="/sentiment">
-            <span class="tool-num">01</span>
-            <span class="tool-main">
-                <span class="tool-cat">ai / nlp</span>
-                <span class="tool-name">Sentiment analysis</span>
-                <span class="tool-desc">Azure Language scores any text positive, neutral, or negative — with per-class confidence.</span>
-            </span>
-            <span class="tool-go">run <span class="arr">&#8599;</span></span>
-        </a>
-        <a class="tool-row" href="/image-analysis">
-            <span class="tool-num">02</span>
-            <span class="tool-main">
-                <span class="tool-cat">ai / vision</span>
-                <span class="tool-name">Image analysis</span>
-                <span class="tool-desc">Computer Vision captions an image, tags what it sees, detects objects, and reads embedded text.</span>
-            </span>
-            <span class="tool-go">run <span class="arr">&#8599;</span></span>
-        </a>
-        <a class="tool-row" href="/chatbot">
-            <span class="tool-num">03</span>
-            <span class="tool-main">
-                <span class="tool-cat">ai / rag</span>
-                <span class="tool-name">RAG chatbot</span>
-                <span class="tool-desc">GPT-4 grounded in a curated knowledge base about me. Ask it my GPA — it knows.</span>
-            </span>
-            <span class="tool-go">run <span class="arr">&#8599;</span></span>
-        </a>
-        <a class="tool-row" href="/encryption">
-            <span class="tool-num">04</span>
-            <span class="tool-main">
-                <span class="tool-cat">security / crypto</span>
-                <span class="tool-name">File encryption</span>
-                <span class="tool-desc">AES-256 with PBKDF2 key derivation and a unique salt per file. Encrypt, download, decrypt.</span>
-            </span>
-            <span class="tool-go">run <span class="arr">&#8599;</span></span>
-        </a>
-        <a class="tool-row" href="/password-checker">
-            <span class="tool-num">05</span>
-            <span class="tool-main">
-                <span class="tool-cat">security / audit</span>
-                <span class="tool-name">Password analyzer</span>
-                <span class="tool-desc">Entropy analysis with crack-time estimates, plus a cryptographically secure generator.</span>
-            </span>
-            <span class="tool-go">run <span class="arr">&#8599;</span></span>
-        </a>
-        <a class="tool-row" href="/hash-verifier">
-            <span class="tool-num">06</span>
-            <span class="tool-main">
-                <span class="tool-cat">security / integrity</span>
-                <span class="tool-name">Hash verifier</span>
-                <span class="tool-desc">MD5 through SHA-512 checksums for any file, with built-in tamper verification.</span>
-            </span>
-            <span class="tool-go">run <span class="arr">&#8599;</span></span>
-        </a>
-    </div>
-</section>
-
-<section class="section">
-    <div class="section-head">
-        <p class="eyebrow">stack</p>
-        <h2 class="section-title">What it's <span class="it">built</span> with.</h2>
-    </div>
-    <div class="stack-grid">
-        <div class="stack-card">
-            <h3>Programming</h3>
-            <p>Python, Java, SQL, HTML/CSS, PowerShell</p>
+    <h2>Six tools running on this site</h2>
+    <p class="intro">Each one is a working demo I built and deployed on Azure. Open one and try to break it.</p>
+    <div class="tools">
+        <div>
+            <h3>AI</h3>
+            <a class="tool" href="/sentiment"><span class="t">Sentiment analysis</span><span class="d">Scores any text positive, neutral or negative with Azure Language</span><span class="go">Open</span></a>
+            <a class="tool" href="/image-analysis"><span class="t">Image analysis</span><span class="d">Captions an image, tags objects and reads the text in it</span><span class="go">Open</span></a>
+            <a class="tool" href="/chatbot"><span class="t">Résumé chatbot</span><span class="d">GPT-4 answering from a knowledge base about my work. Ask it my GPA</span><span class="go">Open</span></a>
         </div>
-        <div class="stack-card">
-            <h3>Cloud &amp; systems</h3>
-            <p>Azure, VM management, network administration, GitHub Actions CI/CD</p>
-        </div>
-        <div class="stack-card">
-            <h3>Development</h3>
-            <p>Flask, database design, object-oriented programming</p>
-        </div>
-        <div class="stack-card">
-            <h3>AI &amp; ML</h3>
-            <p>Azure Cognitive Services, NLP, computer vision, retrieval-augmented generation</p>
+        <div>
+            <h3>Security</h3>
+            <a class="tool" href="/encryption"><span class="t">File encryption</span><span class="d">AES-256 with PBKDF2 key derivation and a fresh salt for each file</span><span class="go">Open</span></a>
+            <a class="tool" href="/password-checker"><span class="t">Password analyzer</span><span class="d">Estimates crack time and generates strong passwords</span><span class="go">Open</span></a>
+            <a class="tool" href="/hash-verifier"><span class="t">Hash verifier</span><span class="d">MD5 to SHA-512 checksums, with a check for tampered files</span><span class="go">Open</span></a>
         </div>
     </div>
 </section>
+
+<section class="section" id="apps">
+    <h2>Applications</h2>
+    <div class="rows">
+        <article class="row">
+            <div><h3>BiteRight</h3><p class="kind">Full-stack wellness app</p></div>
+            <p>Meal logging, gentle fitness and mood tracking for older adults. Works offline, then syncs once you sign in, with an optional Premium tier billed through Stripe.</p>
+            <div><p class="stack">React, Vite, Tailwind, Node and Express, JWT auth, Stripe, USDA FoodData Central</p><p class="links"><a href="/code/biteright-server">Server code</a><a href="/code/biteright-payments">Stripe billing</a><a href="/code/biteright-app">React app</a></p></div>
+        </article>
+        <article class="row">
+            <div><h3>Task Manager</h3><p class="kind">Kanban board</p></div>
+            <p>Drag-and-drop columns, an analytics view and a small burst of confetti when you clear a card. Runs on a Flask JSON API.</p>
+            <div><p class="stack">JavaScript, drag and drop, Flask</p><p class="links"><a href="/static/apps/taskmanager/index.html" target="_blank" rel="noopener">Launch app</a></p></div>
+        </article>
+        <article class="row">
+            <div><h3>Vaultlock</h3><p class="kind">Client-side file encryptor</p></div>
+            <p>Encrypts files in the browser with authenticated AES-256-GCM, so your data never leaves your machine. No dependencies.</p>
+            <div><p class="stack">Web Crypto API, AES-256-GCM, PBKDF2</p><p class="links"><a href="/static/apps/vaultlock/index.html" target="_blank" rel="noopener">Launch app</a></p></div>
+        </article>
+    </div>
+    <p class="more"><a href="/projects">See every project</a></p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  var slider=document.getElementById('eps'),out=document.getElementById('epsOut'),
+      guess=document.getElementById('guess'),trail=document.getElementById('trail'),
+      verdict=document.getElementById('verdict'),cv=document.getElementById('noise'),ctx=cv.getContext('2d');
+  var base=[];for(var i=0;i<48*36;i++)base.push(Math.random()*2-1);
+  var img=ctx.createImageData(48,36);
+  function drawNoise(e){
+    var k=e/16;
+    for(var i=0;i<base.length;i++){
+      var v=128+base[i]*k*110,p=i*4;
+      img.data[p]=v;img.data[p+1]=v+base[(i*7)%base.length]*k*20;img.data[p+2]=v;img.data[p+3]=255;
+    }
+    ctx.putImageData(img,0,0);
+  }
+  /* illustrative path: holds, drifts, then flips to another site */
+  var stops=[[140,160],[140,160],[140,160],[140,160],[146,166],[156,172],[168,180],[190,192],[230,210],[290,236],[350,268],[392,290],[410,300],[410,300],[410,300],[410,300],[410,300]];
+  function update(){
+    var e=+slider.value,s=stops[e];
+    out.textContent=e+' / 255';
+    guess.style.transform='translate('+s[0]+'px,'+s[1]+'px)';
+    trail.style.opacity=e>=9?1:0;
+    if(e<4) verdict.innerHTML='The model places the photo at <b>site one</b>, which is correct';
+    else if(e<9) verdict.innerHTML='The guess starts to drift, but <b>site one</b> still ranks first';
+    else verdict.innerHTML='The model now places the photo at <b class="wrong">site three</b>, a different place';
+    drawNoise(e);
+  }
+  slider.addEventListener('input',update);
+  update();
+})();
+</script>
 {% endblock %}

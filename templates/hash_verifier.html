@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="hash-container">
-    <p class="eyebrow">security / integrity</p>
+    <p class="eyebrow"><a href="/#tools">All tools</a></p>
     <h1>Hash verifier</h1>
     <p class="page-sub">MD5 through SHA-512 checksums for any file, with built-in verification.</p>
     
     <div class="hash-section">
-        <h2>Calculate File Hash</h2>
+        <h2>Calculate file hash</h2>
         <p class="info">Upload any file to calculate its cryptographic hash values</p>
         
         <form id="hashForm" enctype="multipart/form-data">
@@ -20,12 +20,12 @@
                 </label>
             </div>
             
-            <button type="submit" class="btn">Calculate Hashes</button>
+            <button type="submit" class="btn">Calculate hashes</button>
         </form>
         
         <div id="hashResults" class="hash-results hidden">
             <div class="file-info">
-                <h3>File Information</h3>
+                <h3>File information</h3>
                 <div class="info-row">
                     <strong>Filename:</strong>
                     <span id="fileName"></span>
@@ -37,7 +37,7 @@
             </div>
             
             <div class="hash-list">
-                <h3>Calculated Hashes</h3>
+                <h3>Calculated hashes</h3>
                 
                 <div class="hash-item">
                     <div class="hash-header">
@@ -73,7 +73,7 @@
             </div>
             
             <div class="verify-section">
-                <h3>Verify Hash (Optional)</h3>
+                <h3>Verify a hash (optional)</h3>
                 <p class="info-small">Paste an expected hash value to verify file integrity</p>
                 
                 <div class="verify-inputs">
@@ -118,7 +118,7 @@
         </div>
         
         <div class="use-cases">
-            <h4>Common Use Cases:</h4>
+            <h4>Common uses</h4>
             <ul>
                 <li><strong>Download Verification:</strong> Verify downloaded files haven't been tampered with</li>
                 <li><strong>File Integrity:</strong> Detect file corruption or unauthorized changes</li>
@@ -201,7 +201,7 @@ function copyHash(type) {
     
     const btn = event.target;
     const originalText = btn.textContent;
-    btn.textContent = 'Copied!';
+    btn.textContent = 'Copied';
     setTimeout(() => {
         btn.textContent = originalText;
     }, 2000);
@@ -249,10 +249,10 @@ async function verifyHash() {
         
         if (data.match) {
             resultDiv.className = 'verify-result match';
-            resultDiv.textContent = '✅ MATCH! The hashes are identical. File integrity verified.';
+            resultDiv.textContent = 'Match. The hashes are identical, so the file is intact.';
         } else {
             resultDiv.className = 'verify-result no-match';
-            resultDiv.textContent = '❌ NO MATCH! The hashes differ. File may be corrupted or tampered with.';
+            resultDiv.textContent = 'No match. The hashes differ, so the file may be corrupted or tampered with.';
         }
         
         resultDiv.classList.remove('hidden');
